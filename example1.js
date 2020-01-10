@@ -1,5 +1,5 @@
-const { parseInput } = require("./ULA_lexer_parser");
+const { parseInput } = require("./ULA_parser");
 
-let message = parseInput("CRE");
+let message = parseInput("CREA a;");
 
 console.log(message);
