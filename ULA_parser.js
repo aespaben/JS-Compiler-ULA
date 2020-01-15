@@ -32,6 +32,7 @@ class ULAParser extends CstParser {
       $.CONSUME(tv.IDENTIFICADOR);
       $.CONSUME(tv.ASIGNACION);
       $.SUBRULE($.Expresion);
+      $.CONSUME(tv.PUNTO_COMA);
     });
 
     // $.RULE("Decision", () => {
