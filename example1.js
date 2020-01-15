@@ -2,7 +2,7 @@ const { parseInput, PARSER } = require("./ULA_parser");
 
 
 /* Modifíca la cadena para que pertenezca al lenguaje. */
-let code = "CREA a; a = 4;";
+let code = "CREA a; MUESTRA(a); MUESTRA(5 / 2);";
 
 
 let message = parseInput(code);

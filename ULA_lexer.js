@@ -37,6 +37,7 @@ const ENTONCES = createToken("ENTONCES", /ENTONCES/, IDENTIFICADOR);
 const REPITE = createToken("REPITE", /REPITE/, IDENTIFICADOR);
 const VECES = createToken("VECES", /VECES/, IDENTIFICADOR);
 const MUESTRA = createToken("MUESTRA", /MUESTRA/, IDENTIFICADOR);
+const LEE = createToken("LEE", /LEE/, IDENTIFICADOR);
 const CREA = createToken("CREA", /CREA/, IDENTIFICADOR);
 const CIERTO = createToken("CIERTO", /CIERTO/, IDENTIFICADOR);
 const FALSO = createToken("FALSO", /FALSO/, IDENTIFICADOR);

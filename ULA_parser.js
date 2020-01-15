@@ -10,22 +10,26 @@ class ULAParser extends CstParser {
 
     $.RULE("Programa_ULA", () => {
       $.MANY(() => {
-        $.SUBRULE($.Sentencia);
+        $.OR([
+          { ALT: () => { $.SUBRULE($.Declaracion); } },
+          { ALT: () => { $.SUBRULE($.Asignacion); } },
+          { ALT: () => { $.SUBRULE($.Impresion); } },
+          { ALT: () => { $.SUBRULE($.Lectura); } }
+        ]);
       });
-    });
-
-    $.RULE("Sentencia", () => {
-      $.OR([
-        { ALT: () => { $.SUBRULE($.Declaracion); } },
-        { ALT: () => { $.SUBRULE($.Asignacion); } }
-        /* Hay que agregar las estructuras de decisión y de repetición, además de otras operaciones. */
-      ]);
     });
 
     $.RULE("Declaracion", () => {
       $.CONSUME(tv.CREA);
-      $.CONSUME(tv.IDENTIFICADOR);
-      $.CONSUME(tv.PUNTO_COMA);
+      $.OR([
+        { ALT: () => { $.SUBRULE($.Asignacion); } },
+        { 
+          ALT: () => { 
+            $.CONSUME(tv.IDENTIFICADOR);
+            $.CONSUME(tv.PUNTO_COMA);
+          } 
+        }
+      ]);      
     });
 
     $.RULE("Asignacion", () => {
@@ -35,13 +39,70 @@ class ULAParser extends CstParser {
       $.CONSUME(tv.PUNTO_COMA);
     });
 
+    $.RULE("Impresion", () => {
+      $.CONSUME(tv.MUESTRA);
+      $.CONSUME(tv.PAREN_I);
+      $.OR([
+        { ALT: () => { $.SUBRULE($.Expresion); } },
+        { ALT: () => { $.CONSUME(tv.IDENTIFICADOR); } }        
+      ]);
+      $.CONSUME(tv.PAREN_D);
+      $.CONSUME(tv.PUNTO_COMA);
+    });
+
     $.RULE("Expresion", () => {
       $.OR([
-        { ALT: () => { $.CONSUME(tv.NUMERO); } },
-        { ALT: () => { $.CONSUME(tv.FRASE); } },
-        { ALT: () => { $.CONSUME(tv.CIERTO); } },
-        { ALT: () => { $.CONSUME(tv.FALSO); } }
+        { ALT: () => { $.SUBRULE($.Expresion_logica); } },
+        { ALT: () => { $.SUBRULE($.Expresion_matematica); } }
       ]);
+    });    
+
+    $.RULE("Expresion_logica", () => {
+      $.SUBRULE($.Expresion_atomica, { LABEL: "LI" });
+      $.SUBRULE($.Operador_relacional);
+      $.SUBRULE2($.Expresion_atomica, { LABEL: "LD" });
+    });
+
+    $.RULE("Expresion_atomica", () => {
+      $.OR([
+        { ALT: () => { $.CONSUME(tv.NUMERO); } },
+        { ALT: () => { $.CONSUME(tv.IDENTIFICADOR); } }
+      ]);
+    });
+
+    $.RULE("Operador_relacional", () => {
+      $.OR([
+        { ALT: () => { $.CONSUME(tv.MAYOR); } },
+        { ALT: () => { $.CONSUME(tv.MAYOR_IGUAL); } },
+        { ALT: () => { $.CONSUME(tv.MENOR); } },
+        { ALT: () => { $.CONSUME(tv.MENOR_IGUAL); } },
+        { ALT: () => { $.CONSUME(tv.IGUAL); } }
+      ]);
+    });
+
+    $.RULE("Expresion_matematica", () => {
+      $.CONSUME(tv.NUMERO);
+      $.MANY(() => {
+        $.SUBRULE($.Operador_matematico);
+        $.CONSUME2(tv.NUMERO);
+      });       
+    });
+
+    $.RULE("Operador_matematico", () => {
+      $.OR([
+        { ALT: () => { $.CONSUME(tv.MAS); } },
+        { ALT: () => { $.CONSUME(tv.MENOS); } },
+        { ALT: () => { $.CONSUME(tv.POR); } },
+        { ALT: () => { $.CONSUME(tv.ENTRE); } }
+      ]);
+    });
+
+    $.RULE("Lectura", () => {
+      $.CONSUME(tv.LEE);
+      $.CONSUME(tv.PAREN_I);
+      $.CONSUME(tv.IDENTIFICADOR);
+      $.CONSUME(tv.PAREN_D);
+      $.CONSUME(tv.PUNTO_COMA);
     });
 
     this.performSelfAnalysis();
