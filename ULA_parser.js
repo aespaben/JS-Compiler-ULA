@@ -16,12 +16,9 @@ class ULAParser extends CstParser {
 
     $.RULE("Sentencia", () => {
       $.OR([
-        {
-          ALT: () => { $.SUBRULE($.Declaracion); }
-        },
-        {
-          ALT: () => { $.SUBRULE($.Asignacion); }
-        }
+        { ALT: () => { $.SUBRULE($.Declaracion); } },
+        { ALT: () => { $.SUBRULE($.Asignacion); } },
+        // { ALT: () => { $.SUBRULE($.Decision); } }
       ]);
     });
 
@@ -37,35 +34,41 @@ class ULAParser extends CstParser {
       $.SUBRULE($.Expresion);
     });
 
+    // $.RULE("Decision", () => {
+    //   $.CONSUME(tv.SI);
+    //   $.CONSUME(tv.PAREN_I);
+    //   $.OR([
+    //      { ALT: () => { $.SUBRULE($.Expresion); } },
+    //     { ALT: () => { $.SUBRULE($.Comparacion); } }
+    //   ]);
+    //   $.CONSUME(tv.PAREN_D);
+    //   $.CONSUME(tv.ENTONCES);
+    //   $.SUBRULE($.Sentencia);
+    //   $.OPTION(() => {
+    //     $.CONSUME(tv.SINO);
+    //     $.SUBRULE2($.Sentencia);
+    //   });
+    // });
+
     $.RULE("Expresion", () => {
       $.OR([
-        {
-          ALT: () => { $.CONSUME(tv.NUMERO); }
-        },
-        {
-          ALT: () => { $.CONSUME(tv.FRASE); }
-        }
+        { ALT: () => { $.CONSUME(tv.NUMERO); } },
+        { ALT: () => { $.CONSUME(tv.FRASE); } },
+        { ALT: () => { $.CONSUME(tv.CIERTO); } },
+        { ALT: () => { $.CONSUME(tv.FALSO); } }
       ]);
     });
 
-    /* REGLA: Declarar y definir variable. */
-
-    // $.RULE("declararVariable", () => {
-    //   $.SUBRULE($.keywordCrea);
-    //   $.SUBRULE($.nombreVariable);
-    //   $.SUBRULE($.puntoYComa);
-    // });
-
-    // $.RULE("keywordCrea", () => {
-    //   $.CONSUME(tv.CREA);
-    // });
-
-    // $.RULE("nombreVariable", () => {
-    //   $.CONSUME(tv.IDENTIFICADOR);
-    // });
-
-    // $.RULE("puntoYComa", () => {
-    //   $.CONSUME(tv.PUNTO_COMA);
+    // $.RULE("Comparacion", () => {
+    //   $.SUBRULE($.Expresion);
+    //   $.OR([
+    //     { ALT: () => { $.CONSUME(tv.MENOR); } },
+    //     { ALT: () => { $.CONSUME(tv.MAYOR); } },
+    //     { ALT: () => { $.CONSUME(tv.MENOR_IGUAL); } },
+    //     { ALT: () => { $.CONSUME(tv.MAYOR_IGUAL); } },
+    //     { ALT: () => { $.CONSUME(tv.IGUAL); } }
+    //   ]);
+    //   $.SUBRULE2($.Expresion);
     // });
 
     this.performSelfAnalysis();
