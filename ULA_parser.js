@@ -17,8 +17,8 @@ class ULAParser extends CstParser {
     $.RULE("Sentencia", () => {
       $.OR([
         { ALT: () => { $.SUBRULE($.Declaracion); } },
-        { ALT: () => { $.SUBRULE($.Asignacion); } },
-        // { ALT: () => { $.SUBRULE($.Decision); } }
+        { ALT: () => { $.SUBRULE($.Asignacion); } }
+        /* Hay que agregar las estructuras de decisión y de repetición, además de otras operaciones. */
       ]);
     });
 
@@ -35,22 +35,6 @@ class ULAParser extends CstParser {
       $.CONSUME(tv.PUNTO_COMA);
     });
 
-    // $.RULE("Decision", () => {
-    //   $.CONSUME(tv.SI);
-    //   $.CONSUME(tv.PAREN_I);
-    //   $.OR([
-    //      { ALT: () => { $.SUBRULE($.Expresion); } },
-    //     { ALT: () => { $.SUBRULE($.Comparacion); } }
-    //   ]);
-    //   $.CONSUME(tv.PAREN_D);
-    //   $.CONSUME(tv.ENTONCES);
-    //   $.SUBRULE($.Sentencia);
-    //   $.OPTION(() => {
-    //     $.CONSUME(tv.SINO);
-    //     $.SUBRULE2($.Sentencia);
-    //   });
-    // });
-
     $.RULE("Expresion", () => {
       $.OR([
         { ALT: () => { $.CONSUME(tv.NUMERO); } },
@@ -59,18 +43,6 @@ class ULAParser extends CstParser {
         { ALT: () => { $.CONSUME(tv.FALSO); } }
       ]);
     });
-
-    // $.RULE("Comparacion", () => {
-    //   $.SUBRULE($.Expresion);
-    //   $.OR([
-    //     { ALT: () => { $.CONSUME(tv.MENOR); } },
-    //     { ALT: () => { $.CONSUME(tv.MAYOR); } },
-    //     { ALT: () => { $.CONSUME(tv.MENOR_IGUAL); } },
-    //     { ALT: () => { $.CONSUME(tv.MAYOR_IGUAL); } },
-    //     { ALT: () => { $.CONSUME(tv.IGUAL); } }
-    //   ]);
-    //   $.SUBRULE2($.Expresion);
-    // });
 
     this.performSelfAnalysis();
   }
