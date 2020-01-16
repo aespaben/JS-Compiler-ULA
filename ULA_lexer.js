@@ -60,7 +60,6 @@ const LLAVE_D = createToken("LLAVE_D", /\}/);
 
 const PUNTO_COMA = createToken("PUNTO_COMA", /;/);
 const COMA = createToken("COMA", /,/);
-const COMILLAS_DOBLES = createToken("COMILLAS_DOBLES", /"/);
 const FRASE = createToken("FRASE", /"(?:[^"\\]|\\.)*"/);
 
 /* NÚMERO.
