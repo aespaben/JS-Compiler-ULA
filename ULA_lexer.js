@@ -51,16 +51,17 @@ const NO = createToken("NO", /NO/, IDENTIFICADOR);
 const PAREN_I = createToken("PAREN_I", /\(/);
 const PAREN_D = createToken("PAREN_D", /\)/);
 const CORCH_I = createToken("CORCH_I", /\[/);
-const CORCH_D = createToken("CORCH_D", /]/);
+const CORCH_D = createToken("CORCH_D", /\]/);
 const LLAVE_I = createToken("LLAVE_I", /\{/);
-const LLAVE_D = createToken("LLAVE_D", /}/);
+const LLAVE_D = createToken("LLAVE_D", /\}/);
 
 /* PUNTO Y COMA, COMA, ORACIÓN.
 ***********************************************/
 
 const PUNTO_COMA = createToken("PUNTO_COMA", /;/);
 const COMA = createToken("COMA", /,/);
-const FRASE = createToken("FRASE", /"([^"]|\\")*"/);
+const COMILLAS_DOBLES = createToken("COMILLAS_DOBLES", /"/);
+const FRASE = createToken("FRASE", /"(?:[^"\\]|\\.)*"/);
 
 /* NÚMERO.
 ***********************************************/

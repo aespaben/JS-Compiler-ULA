@@ -1,59 +1,130 @@
 /* PARSER.
 ***********************************************/
 const { CstParser } = require("chevrotain");
-const { tokenVocabulary: tv, tokenize } = require("./ULA_lexer");
+const { tokenVocabulary: _, tokenize } = require("./ULA_lexer");
 
 class ULAParser extends CstParser {
   constructor() {
-    super(tv);
+    super(_);
     const $ = this;
 
+    /* Programa principal.  */
     $.RULE("Programa_ULA", () => {
       $.MANY(() => {
         $.OR([
           { ALT: () => { $.SUBRULE($.Declaracion); } },
           { ALT: () => { $.SUBRULE($.Asignacion); } },
           { ALT: () => { $.SUBRULE($.Impresion); } },
-          { ALT: () => { $.SUBRULE($.Lectura); } }
+          { ALT: () => { $.SUBRULE($.Lectura); } },
+          { ALT: () => { $.SUBRULE($.Decision); } },
+          { ALT: () => { $.SUBRULE($.Repeticion); } }
         ]);
       });
     });
 
+    /* Reglas principales. */
     $.RULE("Declaracion", () => {
-      $.CONSUME(tv.CREA);
+      $.CONSUME(_.CREA);
       $.OR([
         { ALT: () => { $.SUBRULE($.Asignacion); } },
         { 
           ALT: () => { 
-            $.CONSUME(tv.IDENTIFICADOR);
-            $.CONSUME(tv.PUNTO_COMA);
+            $.CONSUME(_.IDENTIFICADOR);
+            $.CONSUME(_.PUNTO_COMA);
           } 
         }
       ]);      
     });
 
     $.RULE("Asignacion", () => {
-      $.CONSUME(tv.IDENTIFICADOR);
-      $.CONSUME(tv.ASIGNACION);
-      $.SUBRULE($.Expresion);
-      $.CONSUME(tv.PUNTO_COMA);
+      $.CONSUME(_.IDENTIFICADOR);
+      $.CONSUME(_.ASIGNACION);
+      $.OR([
+        { ALT: () => { $.SUBRULE($.Expresion); } },
+        { ALT: () => { $.CONSUME(_.FRASE); } }
+      ]);
+      $.CONSUME(_.PUNTO_COMA);
     });
 
     $.RULE("Impresion", () => {
-      $.CONSUME(tv.MUESTRA);
-      $.CONSUME(tv.PAREN_I);
+      $.CONSUME(_.MUESTRA);
+      $.CONSUME(_.PAREN_I);
       $.OR([
-        { ALT: () => { $.SUBRULE($.Expresion); } },
-        { ALT: () => { $.CONSUME(tv.IDENTIFICADOR); } }        
+        { ALT: () => { $.SUBRULE($.Expresion); } }
       ]);
-      $.CONSUME(tv.PAREN_D);
-      $.CONSUME(tv.PUNTO_COMA);
+      $.CONSUME(_.PAREN_D);
+      $.CONSUME(_.PUNTO_COMA);
     });
 
+    $.RULE("Lectura", () => {
+      $.CONSUME(_.LEE);
+      $.CONSUME(_.PAREN_I);
+      $.CONSUME(_.IDENTIFICADOR);
+      $.CONSUME(_.PAREN_D);
+      $.CONSUME(_.PUNTO_COMA);
+    });
+
+    $.RULE("Decision", () => {
+      $.CONSUME(_.SI);
+      $.CONSUME(_.PAREN_I);
+      $.SUBRULE($.Expresion);
+      $.CONSUME(_.PAREN_D);
+      $.CONSUME(_.ENTONCES);
+      $.CONSUME(_.LLAVE_I);
+      $.AT_LEAST_ONE(() => {
+        $.OR([
+          { ALT: () => { $.SUBRULE($.Declaracion); } },
+          { ALT: () => { $.SUBRULE($.Asignacion); } },
+          { ALT: () => { $.SUBRULE($.Impresion); } },
+          { ALT: () => { $.SUBRULE($.Lectura); } },
+          { ALT: () => { $.SUBRULE($.Decision); } },
+          { ALT: () => { $.SUBRULE($.Repeticion); } }
+        ]);
+      });
+      $.CONSUME(_.LLAVE_D);
+      $.OPTION(() => {
+        $.CONSUME(_.SINO);
+        $.CONSUME2(_.LLAVE_I);
+        $.AT_LEAST_ONE2(() => {
+          $.OR2([
+            { ALT: () => { $.SUBRULE2($.Declaracion); } },
+            { ALT: () => { $.SUBRULE2($.Asignacion); } },
+            { ALT: () => { $.SUBRULE2($.Impresion); } },
+            { ALT: () => { $.SUBRULE2($.Lectura); } },
+            { ALT: () => { $.SUBRULE2($.Decision); } },
+            { ALT: () => { $.SUBRULE2($.Repeticion); } }
+          ]);
+        });
+        $.CONSUME2(_.LLAVE_D);
+      });
+    });
+
+    $.RULE("Repeticion", () => {
+      $.CONSUME(_.REPITE);
+      $.OR([
+        { ALT: () => { $.CONSUME(_.NUMERO); } },
+        { ALT: () => { $.CONSUME(_.IDENTIFICADOR); } }
+      ]);
+      $.CONSUME(_.VECES);
+      $.CONSUME(_.LLAVE_I);
+      $.AT_LEAST_ONE(() => {
+        $.OR2([
+          { ALT: () => { $.SUBRULE($.Declaracion); } },
+          { ALT: () => { $.SUBRULE($.Asignacion); } },
+          { ALT: () => { $.SUBRULE($.Impresion); } },
+          { ALT: () => { $.SUBRULE($.Lectura); } },
+          { ALT: () => { $.SUBRULE($.Decision); } },
+          { ALT: () => { $.SUBRULE($.Repeticion); } }
+        ]);
+      });
+      $.CONSUME(_.LLAVE_D);
+    });      
+
+    /* Reglas secundarias. */
     $.RULE("Expresion", () => {
       $.OR([
         { ALT: () => { $.SUBRULE($.Expresion_logica); } },
-        { ALT: () => { $.SUBRULE($.Expresion_matematica); } }
+        { ALT: () => { $.SUBRULE($.Expresion_matematica); } },
       ]);
     });    
 
@@ -65,45 +136,39 @@ class ULAParser extends CstParser {
 
     $.RULE("Expresion_atomica", () => {
       $.OR([
-        { ALT: () => { $.CONSUME(tv.NUMERO); } },
-        { ALT: () => { $.CONSUME(tv.IDENTIFICADOR); } }
+        { ALT: () => { $.CONSUME(_.NUMERO); } },
+        { ALT: () => { $.CONSUME(_.IDENTIFICADOR); } }
       ]);
     });
 
     $.RULE("Operador_relacional", () => {
       $.OR([
-        { ALT: () => { $.CONSUME(tv.MAYOR); } },
-        { ALT: () => { $.CONSUME(tv.MAYOR_IGUAL); } },
-        { ALT: () => { $.CONSUME(tv.MENOR); } },
-        { ALT: () => { $.CONSUME(tv.MENOR_IGUAL); } },
-        { ALT: () => { $.CONSUME(tv.IGUAL); } }
+        { ALT: () => { $.CONSUME(_.MAYOR); } },
+        { ALT: () => { $.CONSUME(_.MAYOR_IGUAL); } },
+        { ALT: () => { $.CONSUME(_.MENOR); } },
+        { ALT: () => { $.CONSUME(_.MENOR_IGUAL); } },
+        { ALT: () => { $.CONSUME(_.IGUAL); } }
       ]);
     });
 
     $.RULE("Expresion_matematica", () => {
-      $.CONSUME(tv.NUMERO);
+      $.SUBRULE($.Expresion_atomica);
       $.MANY(() => {
         $.SUBRULE($.Operador_matematico);
-        $.CONSUME2(tv.NUMERO);
+        $.SUBRULE2($.Expresion_atomica);
       });       
     });
 
     $.RULE("Operador_matematico", () => {
       $.OR([
-        { ALT: () => { $.CONSUME(tv.MAS); } },
-        { ALT: () => { $.CONSUME(tv.MENOS); } },
-        { ALT: () => { $.CONSUME(tv.POR); } },
-        { ALT: () => { $.CONSUME(tv.ENTRE); } }
+        { ALT: () => { $.CONSUME(_.MAS); } },
+        { ALT: () => { $.CONSUME(_.MENOS); } },
+        { ALT: () => { $.CONSUME(_.POR); } },
+        { ALT: () => { $.CONSUME(_.ENTRE); } }
       ]);
     });
 
-    $.RULE("Lectura", () => {
-      $.CONSUME(tv.LEE);
-      $.CONSUME(tv.PAREN_I);
-      $.CONSUME(tv.IDENTIFICADOR);
-      $.CONSUME(tv.PAREN_D);
-      $.CONSUME(tv.PUNTO_COMA);
-    });
+    
 
     this.performSelfAnalysis();
   }
