@@ -1,5 +1,9 @@
-const { parseInput } = require("./ULA_lexer_parser");
+const { parseInput, PARSER } = require("./ULA_parser");
 
-let message = parseInput("CRE");
+/* Modifíca la cadena para que pertenezca al lenguaje. */
+let code = 'CREA a = a + 5;';
 
-console.log(message);
+
+let message = parseInput(code);
+
+console.log(message.children);
