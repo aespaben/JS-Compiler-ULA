@@ -185,7 +185,7 @@ const parseInput = (inputText) => {
   // return message !== undefined ? message : PARSER.errors;
 
   if(PARSER.errors.length > 0) {
-    throw Error("-- Se encontraron errores en el programa -- \n" + PARSER.errors[0].message);
+    console.log("-- Se encontraron errores en el programa -- \n" + PARSER.errors[0].message);
   }  
 };
 

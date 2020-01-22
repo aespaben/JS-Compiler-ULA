@@ -7,11 +7,9 @@ CREA a = a + 5;
 a = b;
 
 SI(a ES b) ENTONCES {
-  b = a;
+  b = a
 }
 `;
 
 
-let message = parseInput(code);
-
-console.log(message.children.Decision[0].children);
+parseInput(code);
