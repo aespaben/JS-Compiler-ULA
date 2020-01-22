@@ -179,10 +179,16 @@ const PARSER = new ULAParser();
 const parseInput = (inputText) => {
   PARSER.input = tokenize(inputText).tokens;
   
-  let message = PARSER.Programa_ULA();
+  // let message = PARSER.Programa_ULA();
+  PARSER.Programa_ULA();
 
-  return message !== undefined ? message : PARSER.errors;
+  // return message !== undefined ? message : PARSER.errors;
+
+  if(PARSER.errors.length > 0) {
+    throw Error("-- Se encontraron errores en el programa -- \n" + PARSER.errors[0].message);
+  }  
 };
 
+module.exports.ULAParser = ULAParser;
 module.exports.PARSER = PARSER;
 module.exports.parseInput = parseInput;
