@@ -1,15 +1,10 @@
-const { parseInput, PARSER } = require("./ULA_parser");
-
+const { parseInput} = require("./ULA_parser");
+const { toAst } = require("./ULA_CST");
 /* Modifíca la cadena para que pertenezca al lenguaje. */
 let code = `
-CREA a = a + 5;
-
-a = b;
-
-SI(a ES b) ENTONCES {
-  b = a
-}
+LEE(x);
 `;
 
 
-parseInput(code);
+// parseInput(code);
+console.log(JSON.stringify(toAst(code), null, 2));
