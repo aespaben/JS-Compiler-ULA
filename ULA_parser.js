@@ -17,8 +17,8 @@ class ULAParser extends CstParser {
 
     $.RULE("Sentencia", () => {
       $.OR([
-        // { ALT: () => { $.SUBRULE($.Declaracion); } },
-        // { ALT: () => { $.SUBRULE($.Asignacion); } },
+        { ALT: () => { $.SUBRULE($.Declaracion); } },
+        { ALT: () => { $.SUBRULE($.Asignacion); } },
         // { ALT: () => { $.SUBRULE($.Impresion); } },
         { ALT: () => { $.SUBRULE($.Lectura); } },
         // { ALT: () => { $.SUBRULE($.Decision); } },
@@ -27,28 +27,28 @@ class ULAParser extends CstParser {
     });
 
     /* Reglas principales. */
-    // $.RULE("Declaracion", () => {
-    //   $.CONSUME(_.CREA);
-    //   $.OR([
-    //     { ALT: () => { $.SUBRULE($.Asignacion); } },
-    //     { 
-    //       ALT: () => { 
-    //         $.CONSUME(_.IDENTIFICADOR);
-    //         $.CONSUME(_.PUNTO_COMA);
-    //       } 
-    //     }
-    //   ]);      
-    // });
+    $.RULE("Declaracion", () => {
+      $.CONSUME(_.CREA);
+      $.OR([
+        { ALT: () => { $.SUBRULE($.Asignacion); } },
+        { 
+          ALT: () => { 
+            $.CONSUME(_.IDENTIFICADOR);
+            $.CONSUME(_.PUNTO_COMA);
+          } 
+        }
+      ]);      
+    });
 
-    // $.RULE("Asignacion", () => {
-    //   $.CONSUME(_.IDENTIFICADOR);
-    //   $.CONSUME(_.ASIGNACION);
-    //   $.OR([
-    //     { ALT: () => { $.SUBRULE($.Expresion); } },
-    //     { ALT: () => { $.CONSUME(_.FRASE); } }
-    //   ]);
-    //   $.CONSUME(_.PUNTO_COMA);
-    // });
+    $.RULE("Asignacion", () => {
+      $.CONSUME(_.IDENTIFICADOR);
+      $.CONSUME(_.ASIGNACION);
+      $.OR([
+        { ALT: () => { $.SUBRULE($.Expresion); } },
+        { ALT: () => { $.CONSUME(_.FRASE); } }
+      ]);
+      $.CONSUME(_.PUNTO_COMA);
+    });
 
     // $.RULE("Impresion", () => {
     //   $.CONSUME(_.MUESTRA);
@@ -102,52 +102,51 @@ class ULAParser extends CstParser {
     // });      
 
     // /* Reglas secundarias. */
-    // $.RULE("Expresion", () => {
-    //   $.OR([
-    //     { ALT: () => { $.SUBRULE($.Expresion_logica); } },
-    //     { ALT: () => { $.SUBRULE($.Expresion_matematica); } },
-    //   ]);
-    // });    
+    $.RULE("Expresion", () => {
+      $.OR([
+        { ALT: () => { $.SUBRULE($.Expresion_logica); } },
+        { ALT: () => { $.SUBRULE($.Expresion_matematica); } },
+      ]);
+    });    
 
-    // $.RULE("Expresion_logica", () => {
-    //   $.SUBRULE($.Expresion_atomica, { LABEL: "LI" });
-    //   $.SUBRULE($.Operador_relacional);
-    //   $.SUBRULE2($.Expresion_atomica, { LABEL: "LD" });
-    // });
+    $.RULE("Expresion_logica", () => {
+      $.SUBRULE($.Expresion_atomica, { LABEL: "LI" });
+      $.SUBRULE($.Operador_relacional);
+      $.SUBRULE2($.Expresion_atomica, { LABEL: "LD" });
+    });
 
-    // $.RULE("Expresion_atomica", () => {
-    //   $.OR([
-    //     { ALT: () => { $.CONSUME(_.NUMERO); } },
-    //     { ALT: () => { $.CONSUME(_.IDENTIFICADOR); } }
-    //   ]);
-    // });
+    $.RULE("Expresion_atomica", () => {
+      $.OR([
+        { ALT: () => { $.CONSUME(_.NUMERO); } },
+        { ALT: () => { $.CONSUME(_.IDENTIFICADOR); } }
+      ]);
+    });
 
-    // $.RULE("Operador_relacional", () => {
-    //   $.OR([
-    //     { ALT: () => { $.CONSUME(_.MAYOR); } },
-    //     { ALT: () => { $.CONSUME(_.MAYOR_IGUAL); } },
-    //     { ALT: () => { $.CONSUME(_.MENOR); } },
-    //     { ALT: () => { $.CONSUME(_.MENOR_IGUAL); } },
-    //     { ALT: () => { $.CONSUME(_.IGUAL); } }
-    //   ]);
-    // });
+    $.RULE("Operador_relacional", () => {
+      $.OR([
+        { ALT: () => { $.CONSUME(_.MAYOR); } },
+        { ALT: () => { $.CONSUME(_.MAYOR_IGUAL); } },
+        { ALT: () => { $.CONSUME(_.MENOR); } },
+        { ALT: () => { $.CONSUME(_.MENOR_IGUAL); } },
+        { ALT: () => { $.CONSUME(_.IGUAL); } }
+      ]);
+    });
 
-    // $.RULE("Expresion_matematica", () => {
-    //   $.SUBRULE($.Expresion_atomica, { LABEL: "LI" });
-    //   $.MANY(() => {
-    //     $.SUBRULE($.Operador_matematico);
-    //     $.SUBRULE2($.Expresion_atomica, { LABEL: "LD" });
-    //   });       
-    // });
+    $.RULE("Expresion_matematica", () => {
+      $.SUBRULE($.Multiplicacion, { LABEL: "LI" });
+      $.MANY(() => {
+        $.CONSUME(_.OPERADOR_ADITIVO);
+        $.SUBRULE2($.Multiplicacion, { LABEL: "LD" });
+      });       
+    });
 
-    // $.RULE("Operador_matematico", () => {
-    //   $.OR([
-    //     { ALT: () => { $.CONSUME(_.MAS); } },
-    //     { ALT: () => { $.CONSUME(_.MENOS); } },
-    //     { ALT: () => { $.CONSUME(_.POR); } },
-    //     { ALT: () => { $.CONSUME(_.ENTRE); } }
-    //   ]);
-    // });   
+    $.RULE("Multiplicacion", () => {
+      $.SUBRULE($.Expresion_atomica, { LABEL: "LI" });
+      $.MANY(() => {
+        $.CONSUME(_.OPERADOR_MULTIPLICATIVO);
+        $.SUBRULE2($.Expresion_atomica, { LABEL: "LD" });
+      });       
+    });
 
     this.performSelfAnalysis();
   }

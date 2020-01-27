@@ -119,12 +119,16 @@ const OPERADOR_MULTIPLICATIVO = createToken({ name: "OPERADOR_MULTIPLICATIVO", p
 TOKENS.unshift(OPERADOR_MULTIPLICATIVO);
 
 const MAS = createToken({ name: "MAS", pattern: /\+/, categories:  OPERADOR_ADITIVO });
+TOKENS.unshift(MAS);
 
 const MENOS = createToken({ name: "MENOS", pattern: /\-/, categories: OPERADOR_ADITIVO });
+TOKENS.unshift(MENOS);
 
 const POR = createToken({ name: "POR", pattern: /\*/, categories: OPERADOR_MULTIPLICATIVO });
+TOKENS.unshift(POR);
 
 const ENTRE = createToken({ name: "ENTRE", pattern: /\//, categories: OPERADOR_MULTIPLICATIVO });
+TOKENS.unshift(ENTRE);
 
 const ASIGNACION = createToken({ name: "ASIGNACION", pattern: /=/ });
 TOKENS.unshift(ASIGNACION);
