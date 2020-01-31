@@ -1,7 +1,8 @@
 /* CST Visitor.
 ***********************************************/
 
-const { tokenize } = require("./ULA_lexer");
+const { tokenMatcher } = require("chevrotain");
+const { tokenize, tokenVocabulary: _ } = require("./ULA_lexer");
 const parser = require("./ULA_parser");
 const ULAParser = parser.ULAParser;
 const PARSER = new ULAParser([]);
@@ -40,6 +41,13 @@ class ULAtoAstVisitor extends BaseULAVisitor {
     else if(ctx.Asignacion) {
       node.Sentencia.push(this.visit(ctx.Asignacion));
     }
+
+    return node;
+  }
+
+  /************ TODO ************/
+  Impresion(ctx) {
+    let node = { name: "Impresion", children: {} };
 
     return node;
   }
@@ -102,17 +110,56 @@ class ULAtoAstVisitor extends BaseULAVisitor {
   Expresion_logica(ctx) {
     let node = { name: "Expresion_logica", children: {} };
 
+    node.children.LI = this.visit(ctx.LI);
+    node.children.Operador_relacional = this.visit(ctx.Operador_relacional);
+    node.children.LI = this.visit(ctx.LD);
+
     return node;
   }
 
   Expresion_matematica(ctx) {
     let node = { name: "Expresion_matematica", children: {} };
 
+    let resultado = this.visit(ctx.LI).children.RESULTADO;
+        
+    if(ctx.LD) {
+      ctx.LD.forEach((operandoLD, i) => {
+        let LDval = this.visit(operandoLD).children.RESULTADO;
+        let operator = ctx.OPERADOR_ADITIVO[i];
+
+        if(tokenMatcher(operator, _.MAS)) {
+          resultado += LDval;
+        }
+        else {
+          resultado -= LDval;
+        }
+      }); 
+    }
+
+    node.children.RESULTADO = resultado;
     return node;
   }
 
   Multiplicacion(ctx) {
     let node = { name: "Multiplicacion", children: {} };
+
+    let resultado = this.visit(ctx.LI).children.NUMERO;
+    
+    if(ctx.LD) {
+      ctx.LD.forEach((operandoLD, i) => {
+        let LDval = this.visit(operandoLD).children.NUMERO;
+        let operator = ctx.OPERADOR_MULTIPLICATIVO[i];
+
+        if(tokenMatcher(operator, _.POR)) {
+          resultado *= LDval;
+        }
+        else {
+          resultado /= LDval;
+        }
+      }); 
+    }
+
+    node.children.RESULTADO = resultado;
 
     return node;
   }
@@ -120,11 +167,34 @@ class ULAtoAstVisitor extends BaseULAVisitor {
   Operador_relacional(ctx) {
     let node = { name: "Operador_relacional", children: {} };
 
+    if(ctx.MAYOR) {
+      node.children.MAYOR = ctx.MAYOR;
+    }
+    else if(ctx.MAYOR_IGUAL) {
+      node.children.MAYOR_IGUAL = ctx.MAYOR_IGUAL;
+    }
+    else if(ctx.MENOR) {
+      node.children.MENOR = ctx.MENOR;
+    }
+    else if(ctx.MENOR_IGUAL) {
+      node.children.MENOR_IGUAL = ctx.MENOR_IGUAL;
+    }
+    else if(ctx.IGUAL) {
+      node.children.IGUAL = ctx.IGUAL;
+    }
+
     return node;
   }
 
   Expresion_atomica(ctx) {
     let node = { name: "Expresion_atomica", children: {} };
+
+    if(ctx.NUMERO) {
+      node.children.NUMERO = parseFloat(ctx.NUMERO[0].image);
+    }
+    else if(ctx.IDENTIFICADOR) {
+      node.children.IDENTIFICADOR = ctx.IDENTIFICADOR;
+    }
 
     return node;
   }

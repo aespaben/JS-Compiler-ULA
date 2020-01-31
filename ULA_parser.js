@@ -19,7 +19,7 @@ class ULAParser extends CstParser {
       $.OR([
         { ALT: () => { $.SUBRULE($.Declaracion); } },
         { ALT: () => { $.SUBRULE($.Asignacion); } },
-        // { ALT: () => { $.SUBRULE($.Impresion); } },
+        { ALT: () => { $.SUBRULE($.Impresion); } },
         { ALT: () => { $.SUBRULE($.Lectura); } },
         // { ALT: () => { $.SUBRULE($.Decision); } },
         // { ALT: () => { $.SUBRULE($.Repeticion); } }
@@ -50,13 +50,13 @@ class ULAParser extends CstParser {
       $.CONSUME(_.PUNTO_COMA);
     });
 
-    // $.RULE("Impresion", () => {
-    //   $.CONSUME(_.MUESTRA);
-    //   $.CONSUME(_.PAREN_I);
-    //   $.SUBRULE($.Expresion);
-    //   $.CONSUME(_.PAREN_D);
-    //   $.CONSUME(_.PUNTO_COMA);
-    // });
+    $.RULE("Impresion", () => {
+      $.CONSUME(_.MUESTRA);
+      $.CONSUME(_.PAREN_I);
+      $.SUBRULE($.Expresion);
+      $.CONSUME(_.PAREN_D);
+      $.CONSUME(_.PUNTO_COMA);
+    });
 
     $.RULE("Lectura", () => {
       $.CONSUME(_.LEE);
