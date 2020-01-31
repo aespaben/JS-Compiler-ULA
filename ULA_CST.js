@@ -18,11 +18,11 @@ class ULAtoAstVisitor extends BaseULAVisitor {
   /* Aquí comienzan las reglas de construcción del AST... */
 
   Programa_ULA(ctx) {
-    let node = { name: "Programa_ULA" };
+    let node = { name: "Programa_ULA", children: [] };
 
     if(ctx.Sentencia) {
       ctx.Sentencia.forEach(e => {
-        node.children = this.visit(e);
+        node.children.push(this.visit(e));
       });
     }
 
@@ -32,7 +32,10 @@ class ULAtoAstVisitor extends BaseULAVisitor {
   Sentencia(ctx) {
     let node = { name: "Sentencia", Sentencia: [] };
    
-    if(ctx.Lectura) {
+    if(ctx.Impresion) {
+      node.Sentencia.push(this.visit(ctx.Impresion));
+    }
+    else if(ctx.Lectura) {
       node.Sentencia.push(this.visit(ctx.Lectura));
     }
     else if(ctx.Declaracion) {
@@ -41,17 +44,25 @@ class ULAtoAstVisitor extends BaseULAVisitor {
     else if(ctx.Asignacion) {
       node.Sentencia.push(this.visit(ctx.Asignacion));
     }
+    
 
     return node;
   }
 
-  /************ TODO ************/
+  
   Impresion(ctx) {
     let node = { name: "Impresion", children: {} };
 
+    node.children.MUESTRA = ctx.MUESTRA;
+    node.children.PAREN_I = ctx.PAREN_I;
+    node.children.Expresion = this.visit(ctx.Expresion);
+    node.children.PAREN_D = ctx.PAREN_D;
+    node.children.PUNTO_COMA = ctx.PUNTO_COMA;
+
     return node;
   }
 
+  
   Lectura(ctx) {
     let node = { name: "Lectura", children: {} };
     node.children.LEE = ctx.LEE;

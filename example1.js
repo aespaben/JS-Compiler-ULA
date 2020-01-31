@@ -3,7 +3,7 @@ const { toAst } = require("./ULA_CST");
 /* Modifíca la cadena para que pertenezca al lenguaje. */
 let code = `
 a = 1+1+1*2/3;
-MUESTRA(a);
+MUESTRA(b);
 `;
 
 
