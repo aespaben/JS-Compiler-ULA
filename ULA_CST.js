@@ -18,11 +18,11 @@ class ULAtoAstVisitor extends BaseULAVisitor {
   /* Aquí comienzan las reglas de construcción del AST... */
 
   Programa_ULA(ctx) {
-    let node = { name: "Programa_ULA", children: [] };
+    let node = { type: "Programa_ULA", body: [] };
 
     if(ctx.Sentencia) {
       ctx.Sentencia.forEach(e => {
-        node.children.push(this.visit(e));
+        node.body.push(this.visit(e));
       });
     }
 
@@ -30,38 +30,36 @@ class ULAtoAstVisitor extends BaseULAVisitor {
   }
 
   Sentencia(ctx) {
-    let node = { name: "Sentencia", Sentencia: [] };
-   
     if(ctx.Impresion) {
-      node.Sentencia.push(this.visit(ctx.Impresion));
+      return this.visit(ctx.Impresion);
     }
     else if(ctx.Lectura) {
-      node.Sentencia.push(this.visit(ctx.Lectura));
+      return this.visit(ctx.Lectura);
     }
     else if(ctx.Declaracion) {
-      node.Sentencia.push(this.visit(ctx.Declaracion));
+      return this.visit(ctx.Declaracion);
     }
     else if(ctx.Asignacion) {
-      node.Sentencia.push(this.visit(ctx.Asignacion));
+      return this.visit(ctx.Asignacion);
     }
     
-
-    return node;
+    return undefined;
   }
 
   
   Impresion(ctx) {
-    let node = { name: "Impresion", children: {} };
-
-    node.children.MUESTRA = ctx.MUESTRA[0].image;
-    node.children.PAREN_I = ctx.PAREN_I[0].image;
-    node.children.Expresion = this.visit(ctx.Expresion);
-    node.children.PAREN_D = ctx.PAREN_D[0].image;
-    node.children.PUNTO_COMA = ctx.PUNTO_COMA[0].image;
-
-    return node;
+    
+    return {
+      type: "Impresion",
+      structure: {
+        MUESTRA: ctx.MUESTRA[0].image,
+        PAREN_I: ctx.PAREN_I[0].image,
+        Expresion: this.visit(ctx.Expresion),
+        PAREN_D: ctx.PAREN_D[0].image,
+        PUNTO_COMA: ctx.PUNTO_COMA[0].image
+      }
+    }
   }
-
   
   Lectura(ctx) {
     let node = { name: "Lectura", children: {} };
@@ -106,36 +104,35 @@ class ULAtoAstVisitor extends BaseULAVisitor {
   }
 
   Expresion(ctx) {
-    let node = { name: "Expresion", children: {} };
-
     if(ctx.Expresion_logica) {
-      node.children.Expresion_logica = this.visit(ctx.Expresion_logica);
+      return this.visit(ctx.Expresion_logica);      
     }
     else {
-      node.children.Expresion_matematica = this.visit(ctx.Expresion_matematica);
+      return this.visit(ctx.Expresion_matematica);      
     }
-
-    return node;
   }
 
   Expresion_logica(ctx) {
-    let node = { name: "Expresion_logica", children: {} };
-
-    node.children.LI = this.visit(ctx.LI);
-    node.children.Operador_relacional = this.visit(ctx.Operador_relacional);
-    node.children.LI = this.visit(ctx.LD);
-
-    return node;
+    let LI = this.visit(ctx.LI).result ? ctx.LI.result : ctx.LI.image;
+    let LD = this.visit(ctx.LD).result ? ctx.LD.result : ctx.LD.image;   
+    
+    return {
+      type: "Expresion_logica",
+      structure: {
+        LI: LI,
+        Operador_relacional: this.visit(ctx.Operador_relacional),
+        LD: LD
+      }
+    };
   }
 
   Expresion_matematica(ctx) {
-    let node = { name: "Expresion_matematica", children: {} };
-
-    let resultado = this.visit(ctx.LI).children.RESULTADO;
+    
+    let resultado = this.visit(ctx.LI).result;
         
     if(ctx.LD) {
       ctx.LD.forEach((operandoLD, i) => {
-        let LDval = this.visit(operandoLD).children.RESULTADO;
+        let LDval = this.visit(operandoLD).result;
         let operator = ctx.OPERADOR_ADITIVO[i];
 
         if(tokenMatcher(operator, _.MAS)) {
@@ -147,18 +144,18 @@ class ULAtoAstVisitor extends BaseULAVisitor {
       }); 
     }
 
-    node.children.RESULTADO = resultado;
-    return node;
+    return {
+      type: "Expresion_matematica",
+      result: resultado
+    };
   }
 
   Multiplicacion(ctx) {
-    let node = { name: "Multiplicacion", children: {} };
-
-    let resultado = this.visit(ctx.LI).children.NUMERO;
+    let resultado = this.visit(ctx.LI).result;
     
     if(ctx.LD) {
       ctx.LD.forEach((operandoLD, i) => {
-        let LDval = this.visit(operandoLD).children.NUMERO;
+        let LDval = this.visit(operandoLD).result;
         let operator = ctx.OPERADOR_MULTIPLICATIVO[i];
 
         if(tokenMatcher(operator, _.POR)) {
@@ -170,9 +167,10 @@ class ULAtoAstVisitor extends BaseULAVisitor {
       }); 
     }
 
-    node.children.RESULTADO = resultado;
-
-    return node;
+    return {
+      type: "Multiplicacion",
+      result: resultado
+    };
   }
 
   Operador_relacional(ctx) {
@@ -198,16 +196,20 @@ class ULAtoAstVisitor extends BaseULAVisitor {
   }
 
   Expresion_atomica(ctx) {
-    let node = { name: "Expresion_atomica", children: {} };
-
     if(ctx.NUMERO) {
-      node.children.NUMERO = parseFloat(ctx.NUMERO[0].image);
+      return {
+        type: "Numero",
+        result: parseFloat(ctx.NUMERO[0].image)
+      };
     }
     else if(ctx.IDENTIFICADOR) {
-      node.children.IDENTIFICADOR = ctx.IDENTIFICADOR[0].image;
+      return {
+        type: "Identificador",
+        image: ctx.IDENTIFICADOR[0].image
+      };
     }
 
-    return node;
+    return undefined;
   }
 }
 
