@@ -53,11 +53,11 @@ class ULAtoAstVisitor extends BaseULAVisitor {
   Impresion(ctx) {
     let node = { name: "Impresion", children: {} };
 
-    node.children.MUESTRA = ctx.MUESTRA;
-    node.children.PAREN_I = ctx.PAREN_I;
+    node.children.MUESTRA = ctx.MUESTRA[0].image;
+    node.children.PAREN_I = ctx.PAREN_I[0].image;
     node.children.Expresion = this.visit(ctx.Expresion);
-    node.children.PAREN_D = ctx.PAREN_D;
-    node.children.PUNTO_COMA = ctx.PUNTO_COMA;
+    node.children.PAREN_D = ctx.PAREN_D[0].image;
+    node.children.PUNTO_COMA = ctx.PUNTO_COMA[0].image;
 
     return node;
   }
@@ -65,25 +65,25 @@ class ULAtoAstVisitor extends BaseULAVisitor {
   
   Lectura(ctx) {
     let node = { name: "Lectura", children: {} };
-    node.children.LEE = ctx.LEE;
-    node.children.PAREN_I = ctx.PAREN_I;
-    node.children.IDENTIFICADOR = ctx.IDENTIFICADOR;
-    node.children.PAREN_D = ctx.PAREN_D;
-    node.children.PUNTO_COMA = ctx.PUNTO_COMA;
+    node.children.LEE = ctx.LEE[0].image;
+    node.children.PAREN_I = ctx.PAREN_I[0].image;
+    node.children.IDENTIFICADOR = ctx.IDENTIFICADOR[0].image;
+    node.children.PAREN_D = ctx.PAREN_D[0].image;
+    node.children.PUNTO_COMA = ctx.PUNTO_COMA[0].image;
 
     return node;
   }
 
   Declaracion(ctx) {
     let node = { name: "Declaracion", children: {} };
-    node.children.CREA = ctx.CREA;
+    node.children.CREA = ctx.CREA[0].image;
 
     if(ctx.Asignacion) {
       node.children.Asignacion = this.visit(ctx.Asignacion);
     }
     else {
-      node.children.IDENTIFICADOR = ctx.IDENTIFICADOR;
-      node.children.PUNTO_COMA = ctx.PUNTO_COMA;
+      node.children.IDENTIFICADOR = ctx.IDENTIFICADOR[0].image;
+      node.children.PUNTO_COMA = ctx.PUNTO_COMA[0].image;
     }
 
     return node;
@@ -92,14 +92,14 @@ class ULAtoAstVisitor extends BaseULAVisitor {
   Asignacion(ctx) {
     let node = { name: "Asignacion", children: {} };
 
-    node.children.IDENTIFICADOR = ctx.IDENTIFICADOR;
-    node.children.ASIGNACION = ctx.ASIGNACION;
+    node.children.IDENTIFICADOR = ctx.IDENTIFICADOR[0].image;
+    node.children.ASIGNACION = ctx.ASIGNACION[0].image;
 
     if(ctx.Expresion) {
       node.children.Expresion = this.visit(ctx.Expresion);
     }
     else {
-      node.children.FRASE = ctx.FRASE;
+      node.children.FRASE = ctx.FRASE[0].image;
     }
 
     return node;
@@ -179,19 +179,19 @@ class ULAtoAstVisitor extends BaseULAVisitor {
     let node = { name: "Operador_relacional", children: {} };
 
     if(ctx.MAYOR) {
-      node.children.MAYOR = ctx.MAYOR;
+      node.children.MAYOR = ctx.MAYOR[0].image;
     }
     else if(ctx.MAYOR_IGUAL) {
-      node.children.MAYOR_IGUAL = ctx.MAYOR_IGUAL;
+      node.children.MAYOR_IGUAL = ctx.MAYOR_IGUAL[0].image;
     }
     else if(ctx.MENOR) {
-      node.children.MENOR = ctx.MENOR;
+      node.children.MENOR = ctx.MENOR[0].image;
     }
     else if(ctx.MENOR_IGUAL) {
-      node.children.MENOR_IGUAL = ctx.MENOR_IGUAL;
+      node.children.MENOR_IGUAL = ctx.MENOR_IGUAL[0].image;
     }
     else if(ctx.IGUAL) {
-      node.children.IGUAL = ctx.IGUAL;
+      node.children.IGUAL = ctx.IGUAL[0].image;
     }
 
     return node;
@@ -204,14 +204,14 @@ class ULAtoAstVisitor extends BaseULAVisitor {
       node.children.NUMERO = parseFloat(ctx.NUMERO[0].image);
     }
     else if(ctx.IDENTIFICADOR) {
-      node.children.IDENTIFICADOR = ctx.IDENTIFICADOR;
+      node.children.IDENTIFICADOR = ctx.IDENTIFICADOR[0].image;
     }
 
     return node;
   }
 }
 
-const toAsrVisitorIntance = new ULAtoAstVisitor();
+const toAstVisitorIntance = new ULAtoAstVisitor();
 
 module.exports = {
   toAst: function(inputText) {
@@ -224,7 +224,7 @@ module.exports = {
       console.log("-- Se encontraron errores en el programa -- \n" + PARSER.errors[0].message);
     }
 
-    const ast = toAsrVisitorIntance.visit(cst);
+    const ast = toAstVisitorIntance.visit(cst);
 
     return ast;
   }
