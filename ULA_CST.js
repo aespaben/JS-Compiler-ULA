@@ -42,6 +42,12 @@ class ULAtoAstVisitor extends BaseULAVisitor {
     else if(ctx.Asignacion) {
       return this.visit(ctx.Asignacion);
     }
+    else if(ctx.Decision) {
+      return this.visit(ctx.Decision);
+    }
+    else if(ctx.Repeticion) {
+      return this.visit(ctx.Repeticion);
+    }
     
     return undefined;
   }
@@ -62,43 +68,81 @@ class ULAtoAstVisitor extends BaseULAVisitor {
   }
   
   Lectura(ctx) {
-    let node = { name: "Lectura", children: {} };
-    node.children.LEE = ctx.LEE[0].image;
-    node.children.PAREN_I = ctx.PAREN_I[0].image;
-    node.children.IDENTIFICADOR = ctx.IDENTIFICADOR[0].image;
-    node.children.PAREN_D = ctx.PAREN_D[0].image;
-    node.children.PUNTO_COMA = ctx.PUNTO_COMA[0].image;
-
-    return node;
+    return {
+      type: "Lectura",
+      structure: {
+        LEE: ctx.LEE[0].image,
+        PAREN_I: ctx.PAREN_I[0].image,
+        IDENTIFICADOR: ctx.IDENTIFICADOR[0].image,
+        PAREN_D: ctx.PAREN_D[0].image,
+        PUNTO_COMA: ctx.PUNTO_COMA[0].image
+      }
+    };
   }
 
   Declaracion(ctx) {
-    let node = { name: "Declaracion", children: {} };
-    node.children.CREA = ctx.CREA[0].image;
+    let node = { type: "Declaracion", structure: {} };
+    node.structure.CREA = ctx.CREA[0].image;
 
     if(ctx.Asignacion) {
-      node.children.Asignacion = this.visit(ctx.Asignacion);
+      node.structure.Asignacion = this.visit(ctx.Asignacion);
     }
     else {
-      node.children.IDENTIFICADOR = ctx.IDENTIFICADOR[0].image;
-      node.children.PUNTO_COMA = ctx.PUNTO_COMA[0].image;
+      node.structure.IDENTIFICADOR = ctx.IDENTIFICADOR[0].image;
+      node.structure.PUNTO_COMA = ctx.PUNTO_COMA[0].image;
     }
 
     return node;
   }
 
   Asignacion(ctx) {
-    let node = { name: "Asignacion", children: {} };
+    let node = { type: "Asignacion", structure: {} };
 
-    node.children.IDENTIFICADOR = ctx.IDENTIFICADOR[0].image;
-    node.children.ASIGNACION = ctx.ASIGNACION[0].image;
+    node.structure.IDENTIFICADOR = ctx.IDENTIFICADOR[0].image;
+    node.structure.ASIGNACION = ctx.ASIGNACION[0].image;
 
     if(ctx.Expresion) {
-      node.children.Expresion = this.visit(ctx.Expresion);
+      node.structure.Expresion = this.visit(ctx.Expresion);
     }
     else {
-      node.children.FRASE = ctx.FRASE[0].image;
+      node.structure.FRASE = ctx.FRASE[0].image;
     }
+
+    return node;
+  }
+
+  Decision(ctx) {
+    let node = { type: "Decision", structure: {} };
+
+    node.structure.SI = ctx.SI[0].image;
+    node.structure.PAREN_I_1 = ctx.PAREN_I[0].image;
+    node.structure.Expresion = this.visit(ctx.Expresion);
+    node.structure.PAREN_D_1 = ctx.PAREN_D[0].image;
+    node.structure.ENTONCES = ctx.ENTONCES[0].image;
+    node.structure.LLAVE_I_1 = ctx.LLAVE_I[0].image;
+    node.structure.Sentencia_1 = [];
+
+    ctx.Sentencia.forEach((e) => {
+      node.structure.Sentencia_1.push(this.visit(ctx.Sentencia[0]));
+    });
+
+    node.structure.LLAVE_D_1 = ctx.LLAVE_D[0].image;
+
+    if(ctx.SINO) {
+      node.structure.SINO = ctx.SINO[0].image;
+      node.structure.LLAVE_I_2 = ctx.LLAVE_I[1].image;
+      node.structure.Sentencia_2 = [];
+      ctx.Sentencia.forEach((e) => {
+        node.structure.Sentencia_2.push(this.visit(ctx.Sentencia[1]));
+      });
+
+      node.structure.LLAVE_D_2 = ctx.LLAVE_D[1].image;
+    }
+    return node;
+  }
+
+  Repeticion(ctx) {
+    let node = { type: "Repeticion", structure: {} };
 
     return node;
   }
@@ -113,8 +157,10 @@ class ULAtoAstVisitor extends BaseULAVisitor {
   }
 
   Expresion_logica(ctx) {
-    let LI = this.visit(ctx.LI).result ? ctx.LI.result : ctx.LI.image;
-    let LD = this.visit(ctx.LD).result ? ctx.LD.result : ctx.LD.image;   
+    let LIVisit = this.visit(ctx.LI);
+    let LDVisit = this.visit(ctx.LD);
+    let LI = LIVisit.result ? LIVisit.result : LIVisit.image;
+    let LD = LDVisit.result ? LDVisit.result : LDVisit.image;   
     
     return {
       type: "Expresion_logica",
@@ -174,25 +220,23 @@ class ULAtoAstVisitor extends BaseULAVisitor {
   }
 
   Operador_relacional(ctx) {
-    let node = { name: "Operador_relacional", children: {} };
-
     if(ctx.MAYOR) {
-      node.children.MAYOR = ctx.MAYOR[0].image;
+      return ctx.MAYOR[0].image;
     }
     else if(ctx.MAYOR_IGUAL) {
-      node.children.MAYOR_IGUAL = ctx.MAYOR_IGUAL[0].image;
+      return ctx.MAYOR_IGUAL[0].image;
     }
     else if(ctx.MENOR) {
-      node.children.MENOR = ctx.MENOR[0].image;
+      return ctx.MENOR[0].image;
     }
     else if(ctx.MENOR_IGUAL) {
-      node.children.MENOR_IGUAL = ctx.MENOR_IGUAL[0].image;
+      return ctx.MENOR_IGUAL[0].image;
     }
     else if(ctx.IGUAL) {
-      node.children.IGUAL = ctx.IGUAL[0].image;
+      return ctx.IGUAL[0].image;
     }
 
-    return node;
+    return undefined;
   }
 
   Expresion_atomica(ctx) {

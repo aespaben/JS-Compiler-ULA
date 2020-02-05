@@ -21,7 +21,7 @@ class ULAParser extends CstParser {
         { ALT: () => { $.SUBRULE($.Asignacion); } },
         { ALT: () => { $.SUBRULE($.Impresion); } },
         { ALT: () => { $.SUBRULE($.Lectura); } },
-        // { ALT: () => { $.SUBRULE($.Decision); } },
+        { ALT: () => { $.SUBRULE($.Decision); } },
         // { ALT: () => { $.SUBRULE($.Repeticion); } }
       ]);
     });
@@ -66,42 +66,42 @@ class ULAParser extends CstParser {
       $.CONSUME(_.PUNTO_COMA);
     });
 
-    // $.RULE("Decision", () => {
-    //   $.CONSUME(_.SI);
-    //   $.CONSUME(_.PAREN_I);
-    //   $.SUBRULE($.Expresion);
-    //   $.CONSUME(_.PAREN_D);
-    //   $.CONSUME(_.ENTONCES);
-    //   $.CONSUME(_.LLAVE_I);
-    //   $.AT_LEAST_ONE(() => {
-    //     $.SUBRULE($.Sentencia);
-    //   });
-    //   $.CONSUME(_.LLAVE_D);
-    //   $.OPTION(() => {
-    //     $.CONSUME(_.SINO);
-    //     $.CONSUME2(_.LLAVE_I);
-    //     $.AT_LEAST_ONE2(() => {
-    //       $.SUBRULE2($.Sentencia)
-    //     });
-    //     $.CONSUME2(_.LLAVE_D);
-    //   });
-    // });
+    $.RULE("Decision", () => {
+      $.CONSUME(_.SI);
+      $.CONSUME(_.PAREN_I);
+      $.SUBRULE($.Expresion);
+      $.CONSUME(_.PAREN_D);
+      $.CONSUME(_.ENTONCES);
+      $.CONSUME(_.LLAVE_I);
+      $.AT_LEAST_ONE(() => {
+        $.SUBRULE($.Sentencia);
+      });
+      $.CONSUME(_.LLAVE_D);
+      $.OPTION(() => {
+        $.CONSUME(_.SINO);
+        $.CONSUME2(_.LLAVE_I);
+        $.AT_LEAST_ONE2(() => {
+          $.SUBRULE2($.Sentencia)
+        });
+        $.CONSUME2(_.LLAVE_D);
+      });
+    });
 
-    // $.RULE("Repeticion", () => {
-    //   $.CONSUME(_.REPITE);
-    //   $.OR([
-    //     { ALT: () => { $.CONSUME(_.NUMERO); } },
-    //     { ALT: () => { $.CONSUME(_.IDENTIFICADOR); } }
-    //   ]);
-    //   $.CONSUME(_.VECES);
-    //   $.CONSUME(_.LLAVE_I);
-    //   $.AT_LEAST_ONE(() => {
-    //     $.SUBRULE($.Sentencia);
-    //   });
-    //   $.CONSUME(_.LLAVE_D);
-    // });      
+    $.RULE("Repeticion", () => {
+      $.CONSUME(_.REPITE);
+      $.OR([
+        { ALT: () => { $.CONSUME(_.NUMERO); } },
+        { ALT: () => { $.CONSUME(_.IDENTIFICADOR); } }
+      ]);
+      $.CONSUME(_.VECES);
+      $.CONSUME(_.LLAVE_I);
+      $.AT_LEAST_ONE(() => {
+        $.SUBRULE($.Sentencia);
+      });
+      $.CONSUME(_.LLAVE_D);
+    });      
 
-    // /* Reglas secundarias. */
+    /* Reglas secundarias. */
     $.RULE("Expresion", () => {
       $.OR([
         { ALT: () => { $.SUBRULE($.Expresion_logica); } },
