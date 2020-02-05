@@ -57,26 +57,14 @@ class ULAtoAstVisitor extends BaseULAVisitor {
     
     return {
       type: "Impresion",
-      structure: {
-        MUESTRA: ctx.MUESTRA[0].image,
-        PAREN_I: ctx.PAREN_I[0].image,
-        Expresion: this.visit(ctx.Expresion),
-        PAREN_D: ctx.PAREN_D[0].image,
-        PUNTO_COMA: ctx.PUNTO_COMA[0].image
-      }
-    }
+      argument: this.visit(ctx.Expresion)
+    };
   }
   
   Lectura(ctx) {
     return {
       type: "Lectura",
-      structure: {
-        LEE: ctx.LEE[0].image,
-        PAREN_I: ctx.PAREN_I[0].image,
-        IDENTIFICADOR: ctx.IDENTIFICADOR[0].image,
-        PAREN_D: ctx.PAREN_D[0].image,
-        PUNTO_COMA: ctx.PUNTO_COMA[0].image
-      }
+      argument: ctx.IDENTIFICADOR[0].image
     };
   }
 
