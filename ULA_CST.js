@@ -69,62 +69,53 @@ class ULAtoAstVisitor extends BaseULAVisitor {
   }
 
   Declaracion(ctx) {
-    let node = { type: "Declaracion", structure: {} };
-    node.structure.CREA = ctx.CREA[0].image;
+    let node = {};
+    
 
     if(ctx.Asignacion) {
-      node.structure.Asignacion = this.visit(ctx.Asignacion);
+      let asignacion = this.visit(ctx.Asignacion);
+      node.type = "Definicion";
+      node.name = asignacion.name;
+      node.expression = asignacion.expression;      
     }
     else {
-      node.structure.IDENTIFICADOR = ctx.IDENTIFICADOR[0].image;
-      node.structure.PUNTO_COMA = ctx.PUNTO_COMA[0].image;
+      node.type = "Declaracion";
+      node.name = ctx.IDENTIFICADOR[0].image;
     }
 
     return node;
   }
 
   Asignacion(ctx) {
-    let node = { type: "Asignacion", structure: {} };
+    let node = { type: "Asignacion" };
 
-    node.structure.IDENTIFICADOR = ctx.IDENTIFICADOR[0].image;
-    node.structure.ASIGNACION = ctx.ASIGNACION[0].image;
+    node.name = ctx.IDENTIFICADOR[0].image;
 
     if(ctx.Expresion) {
-      node.structure.Expresion = this.visit(ctx.Expresion);
+      node.expression = this.visit(ctx.Expresion);
     }
     else {
-      node.structure.FRASE = ctx.FRASE[0].image;
+      node.string = ctx.FRASE[0].image;
     }
 
     return node;
   }
 
   Decision(ctx) {
-    let node = { type: "Decision", structure: {} };
+    let node = { type: "Decision" };
 
-    node.structure.SI = ctx.SI[0].image;
-    node.structure.PAREN_I_1 = ctx.PAREN_I[0].image;
-    node.structure.Expresion = this.visit(ctx.Expresion);
-    node.structure.PAREN_D_1 = ctx.PAREN_D[0].image;
-    node.structure.ENTONCES = ctx.ENTONCES[0].image;
-    node.structure.LLAVE_I_1 = ctx.LLAVE_I[0].image;
-    node.structure.Sentencia_1 = [];
+    node.expression = this.visit(ctx.Expresion);
+    node.if_statements = [];
 
     ctx.Sentencia.forEach((e) => {
-      node.structure.Sentencia_1.push(this.visit(ctx.Sentencia[0]));
+      node.if_statements.push(this.visit(ctx.Sentencia[0]));
     });
 
-    node.structure.LLAVE_D_1 = ctx.LLAVE_D[0].image;
-
     if(ctx.SINO) {
-      node.structure.SINO = ctx.SINO[0].image;
-      node.structure.LLAVE_I_2 = ctx.LLAVE_I[1].image;
-      node.structure.Sentencia_2 = [];
+      node.else_statements = [];
       ctx.Sentencia.forEach((e) => {
-        node.structure.Sentencia_2.push(this.visit(ctx.Sentencia[1]));
+        node.else_statements.push(this.visit(ctx.Sentencia[1]));
       });
-
-      node.structure.LLAVE_D_2 = ctx.LLAVE_D[1].image;
     }
     return node;
   }
@@ -147,64 +138,83 @@ class ULAtoAstVisitor extends BaseULAVisitor {
   Expresion_logica(ctx) {
     let LIVisit = this.visit(ctx.LI);
     let LDVisit = this.visit(ctx.LD);
-    let LI = LIVisit.result ? LIVisit.result : LIVisit.image;
-    let LD = LDVisit.result ? LDVisit.result : LDVisit.image;   
+    let LI = LIVisit.value ? LIVisit.value : LIVisit.name;
+    let LD = LDVisit.value ? LDVisit.value : LDVisit.name;   
     
     return {
-      type: "Expresion_logica",
-      structure: {
-        LI: LI,
-        Operador_relacional: this.visit(ctx.Operador_relacional),
-        LD: LD
-      }
+      type: "Expresion",
+      lhs: LI,
+      operator: this.visit(ctx.Operador_relacional),
+      rhs: LD
     };
   }
 
   Expresion_matematica(ctx) {
-    
-    let resultado = this.visit(ctx.LI).result;
-        
+    let lhs = this.visit(ctx.LI);
+    let rhs = "";
+    let operator = "";
+
     if(ctx.LD) {
       ctx.LD.forEach((operandoLD, i) => {
-        let LDval = this.visit(operandoLD).result;
-        let operator = ctx.OPERADOR_ADITIVO[i];
+        rhs = this.visit(operandoLD);
+        operator = ctx.OPERADOR_ADITIVO[i].image;
 
+        /*
         if(tokenMatcher(operator, _.MAS)) {
           resultado += LDval;
         }
         else {
           resultado -= LDval;
         }
+        */
+       lhs += operator + rhs;
       }); 
+      
     }
 
-    return {
-      type: "Expresion_matematica",
-      result: resultado
-    };
+    
+    return lhs;
+
+    // return {
+    //   type: "Expresion_aditiva",
+    //   lhs: lhs,
+    //   operator: operator,
+    //   rhs: rhs
+    // };
   }
 
   Multiplicacion(ctx) {
-    let resultado = this.visit(ctx.LI).result;
-    
+    let lhs = this.visit(ctx.LI);
+    let rhs = "";
+    let operator = "";
+
     if(ctx.LD) {
       ctx.LD.forEach((operandoLD, i) => {
-        let LDval = this.visit(operandoLD).result;
-        let operator = ctx.OPERADOR_MULTIPLICATIVO[i];
+        rhs = this.visit(operandoLD);
+        operator = ctx.OPERADOR_MULTIPLICATIVO[i].image;
 
+        /*
         if(tokenMatcher(operator, _.POR)) {
           resultado *= LDval;
         }
         else {
           resultado /= LDval;
         }
+        */
+       lhs += operator + rhs;
       }); 
+      
     }
 
-    return {
-      type: "Multiplicacion",
-      result: resultado
-    };
+    
+
+    return lhs;
+    // return {
+    //   type: "Expresion_multiplicativa",
+    //   lhs: lhs,
+    //   operator: operator,
+    //   rhs: rhs
+    // };
   }
 
   Operador_relacional(ctx) {
@@ -229,15 +239,16 @@ class ULAtoAstVisitor extends BaseULAVisitor {
 
   Expresion_atomica(ctx) {
     if(ctx.NUMERO) {
-      return {
-        type: "Numero",
-        result: parseFloat(ctx.NUMERO[0].image)
-      };
+      // return {
+      //   type: "Numero",
+      //   value: ctx.NUMERO[0].image
+      // };
+      return ctx.NUMERO[0].image;
     }
     else if(ctx.IDENTIFICADOR) {
       return {
         type: "Identificador",
-        image: ctx.IDENTIFICADOR[0].image
+        value: ctx.IDENTIFICADOR[0].image
       };
     }
 
