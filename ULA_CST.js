@@ -57,7 +57,7 @@ class ULAtoAstVisitor extends BaseULAVisitor {
     
     return {
       type: "Impresion",
-      argument: this.visit(ctx.Expresion)
+      param: this.visit(ctx.Expresion)
     };
   }
   
@@ -142,7 +142,7 @@ class ULAtoAstVisitor extends BaseULAVisitor {
     let LD = LDVisit.value ? LDVisit.value : LDVisit.name;   
     
     return {
-      type: "Expresion",
+      type: "Expresion_logica",
       lhs: LI,
       operator: this.visit(ctx.Operador_relacional),
       rhs: LD
@@ -150,71 +150,35 @@ class ULAtoAstVisitor extends BaseULAVisitor {
   }
 
   Expresion_matematica(ctx) {
-    let lhs = this.visit(ctx.LI);
+    let lhs = this.visit(ctx.LI).value;
     let rhs = "";
     let operator = "";
 
     if(ctx.LD) {
       ctx.LD.forEach((operandoLD, i) => {
-        rhs = this.visit(operandoLD);
+        rhs = this.visit(operandoLD).value;
         operator = ctx.OPERADOR_ADITIVO[i].image;
-
-        /*
-        if(tokenMatcher(operator, _.MAS)) {
-          resultado += LDval;
-        }
-        else {
-          resultado -= LDval;
-        }
-        */
-       lhs += operator + rhs;
+        lhs += operator + rhs;
       }); 
       
     }
-
-    
-    return lhs;
-
-    // return {
-    //   type: "Expresion_aditiva",
-    //   lhs: lhs,
-    //   operator: operator,
-    //   rhs: rhs
-    // };
+    return { value: lhs };
   }
 
   Multiplicacion(ctx) {
-    let lhs = this.visit(ctx.LI);
+    let lhs = this.visit(ctx.LI).value;
     let rhs = "";
     let operator = "";
 
     if(ctx.LD) {
       ctx.LD.forEach((operandoLD, i) => {
-        rhs = this.visit(operandoLD);
+        rhs = this.visit(operandoLD).value;
         operator = ctx.OPERADOR_MULTIPLICATIVO[i].image;
-
-        /*
-        if(tokenMatcher(operator, _.POR)) {
-          resultado *= LDval;
-        }
-        else {
-          resultado /= LDval;
-        }
-        */
-       lhs += operator + rhs;
+        lhs += operator + rhs;
       }); 
       
     }
-
-    
-
-    return lhs;
-    // return {
-    //   type: "Expresion_multiplicativa",
-    //   lhs: lhs,
-    //   operator: operator,
-    //   rhs: rhs
-    // };
+    return { value: lhs };
   }
 
   Operador_relacional(ctx) {
@@ -239,11 +203,10 @@ class ULAtoAstVisitor extends BaseULAVisitor {
 
   Expresion_atomica(ctx) {
     if(ctx.NUMERO) {
-      // return {
-      //   type: "Numero",
-      //   value: ctx.NUMERO[0].image
-      // };
-      return ctx.NUMERO[0].image;
+      return {
+        type: "Numero",
+        value: ctx.NUMERO[0].image
+      }
     }
     else if(ctx.IDENTIFICADOR) {
       return {

@@ -105,7 +105,7 @@ class ULAParser extends CstParser {
     $.RULE("Expresion", () => {
       $.OR([
         { ALT: () => { $.SUBRULE($.Expresion_logica); } },
-        { ALT: () => { $.SUBRULE($.Expresion_matematica); } },
+        { ALT: () => { $.SUBRULE($.Expresion_matematica); } }
       ]);
     });    
 

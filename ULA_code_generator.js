@@ -10,7 +10,7 @@ if(ast === undefined) {
 }
 
 let transpiled_code = "";
-
+console.log(JSON.stringify(ast, null, 4));
 if(ast.body) {
   ast.body.forEach(e => {
     if(e.type === "Declaracion") {
@@ -18,25 +18,25 @@ if(ast.body) {
     }
 
     if(e.type === "Asignacion") {
-      transpiled_code += `${e.name} = ${e.expression};\n`;
+      transpiled_code += `${e.name} = ${e.expression.value};\n`;
     }
 
     if(e.type === "Impresion") {
-      if(e.argument.type === "Identificador") {
-        transpiled_code += `console.log(${e.argument.value});\n`;
+      if(e.param.value) {
+        transpiled_code += `console.log(${e.param.value});\n`;
       }
     }
   });
 
-  // fs.writeFileSync("ula_output.js", transpiled_code);
+  fs.writeFileSync("ula_output.js", transpiled_code);
 
-  try {
-    eval(transpiled_code);
-  }
-  catch(e) {
-    if(e instanceof SyntaxError) {
-      console.log(e.message);
-    }
-  }
+  // try {
+  //   eval(transpiled_code);
+  // }
+  // catch(e) {
+  //   if(e instanceof SyntaxError) {
+  //     console.log(e.message);
+  //   }
+  // }
 }
 
