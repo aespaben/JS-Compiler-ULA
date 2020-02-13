@@ -52,13 +52,37 @@ class ULAtoAstVisitor extends BaseULAVisitor {
     return undefined;
   }
 
+  Sentencia_simple(ctx) {
+    if(ctx.Impresion) {
+      return this.visit(ctx.Impresion);
+    }
+    else if(ctx.Lectura) {
+      return this.visit(ctx.Lectura);
+    }
+    else if(ctx.Declaracion) {
+      return this.visit(ctx.Declaracion);
+    }
+    else if(ctx.Asignacion) {
+      return this.visit(ctx.Asignacion);
+    }
+    
+    return undefined;
+  }
+
   
   Impresion(ctx) {
-    
-    return {
-      type: "Impresion",
-      param: this.visit(ctx.Expresion)
-    };
+    if(ctx.Expresion) {    
+      return {
+        type: "Impresion",
+        expression: this.visit(ctx.Expresion)
+      };
+    }
+    else {
+      return {
+        type: "Impresion",
+        expression: { value: ctx.FRASE[0].image }
+      }
+    }
   }
   
   Lectura(ctx) {
@@ -69,8 +93,7 @@ class ULAtoAstVisitor extends BaseULAVisitor {
   }
 
   Declaracion(ctx) {
-    let node = {};
-    
+    let node = {};    
 
     if(ctx.Asignacion) {
       let asignacion = this.visit(ctx.Asignacion);
@@ -105,24 +128,23 @@ class ULAtoAstVisitor extends BaseULAVisitor {
     let node = { type: "Decision" };
 
     node.expression = this.visit(ctx.Expresion);
-    node.if_statements = [];
+    node.statements = [];
 
-    ctx.Sentencia.forEach((e) => {
-      node.if_statements.push(this.visit(ctx.Sentencia[0]));
+    ctx.Sentencia_simple.forEach((e) => {
+      node.statements.push(this.visit(e)); 
     });
 
-    if(ctx.SINO) {
-      node.else_statements = [];
-      ctx.Sentencia.forEach((e) => {
-        node.else_statements.push(this.visit(ctx.Sentencia[1]));
-      });
-    }
     return node;
   }
 
   Repeticion(ctx) {
-    let node = { type: "Repeticion", structure: {} };
+    let node = { type: "Repeticion" };
 
+    node.times = ctx.NUMERO ? ctx.NUMERO[0].image : ctx.IDENTIFICADOR[0].image;
+    node.statements = [];
+    ctx.Sentencia_simple.forEach((e) => {
+      node.statements.push(this.visit(e));
+    });
     return node;
   }
 

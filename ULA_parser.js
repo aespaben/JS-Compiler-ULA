@@ -2,10 +2,13 @@
 ***********************************************/
 const { CstParser } = require("chevrotain");
 const { tokenVocabulary: _, tokenize } = require("./ULA_lexer");
+const { errorProvider } = require("./ULA_error_provider");
+
+
 
 class ULAParser extends CstParser {
   constructor() {
-    super(_);
+    super(_, { errorMessageProvider: errorProvider });
     const $ = this;
 
     /* Programa principal.  */
@@ -22,7 +25,16 @@ class ULAParser extends CstParser {
         { ALT: () => { $.SUBRULE($.Impresion); } },
         { ALT: () => { $.SUBRULE($.Lectura); } },
         { ALT: () => { $.SUBRULE($.Decision); } },
-        // { ALT: () => { $.SUBRULE($.Repeticion); } }
+        { ALT: () => { $.SUBRULE($.Repeticion); } }
+      ]);
+    });
+
+    $.RULE("Sentencia_simple", () => {
+      $.OR([
+        { ALT: () => { $.SUBRULE($.Declaracion); } },
+        { ALT: () => { $.SUBRULE($.Asignacion); } },
+        { ALT: () => { $.SUBRULE($.Impresion); } },
+        { ALT: () => { $.SUBRULE($.Lectura); } }        
       ]);
     });
 
@@ -53,7 +65,11 @@ class ULAParser extends CstParser {
     $.RULE("Impresion", () => {
       $.CONSUME(_.MUESTRA);
       $.CONSUME(_.PAREN_I);
-      $.SUBRULE($.Expresion);
+      $.OR([
+        { ALT: () => { $.SUBRULE($.Expresion); } },
+        { ALT: () => { $.CONSUME(_.FRASE); } }
+      ]);
+      
       $.CONSUME(_.PAREN_D);
       $.CONSUME(_.PUNTO_COMA);
     });
@@ -74,17 +90,17 @@ class ULAParser extends CstParser {
       $.CONSUME(_.ENTONCES);
       $.CONSUME(_.LLAVE_I);
       $.AT_LEAST_ONE(() => {
-        $.SUBRULE($.Sentencia);
+        $.SUBRULE($.Sentencia_simple);
       });
       $.CONSUME(_.LLAVE_D);
-      $.OPTION(() => {
-        $.CONSUME(_.SINO);
-        $.CONSUME2(_.LLAVE_I);
-        $.AT_LEAST_ONE2(() => {
-          $.SUBRULE2($.Sentencia)
-        });
-        $.CONSUME2(_.LLAVE_D);
-      });
+      // $.OPTION(() => {
+      //   $.CONSUME(_.SINO);
+      //   $.CONSUME2(_.LLAVE_I);
+      //   $.AT_LEAST_ONE2(() => {
+      //     $.SUBRULE2($.Sentencia_simple);
+      //   });
+      //   $.CONSUME2(_.LLAVE_D);
+      // });
     });
 
     $.RULE("Repeticion", () => {
@@ -96,7 +112,7 @@ class ULAParser extends CstParser {
       $.CONSUME(_.VECES);
       $.CONSUME(_.LLAVE_I);
       $.AT_LEAST_ONE(() => {
-        $.SUBRULE($.Sentencia);
+        $.SUBRULE($.Sentencia_simple);
       });
       $.CONSUME(_.LLAVE_D);
     });      
