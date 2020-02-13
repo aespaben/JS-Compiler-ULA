@@ -74,7 +74,7 @@ TOKENS.unshift(LLAVE_I);
 const LLAVE_D = createToken({ name: "LLAVE_D", pattern: /\}/ });
 TOKENS.unshift(LLAVE_D);
 
-/* PUNTO Y COMA, COMA, ORACIÓN.
+/* PUNTO Y COMA, COMA, FRASE.
 ***********************************************/
 
 const PUNTO_COMA = createToken({ name: "PUNTO_COMA", pattern: /;/ });
