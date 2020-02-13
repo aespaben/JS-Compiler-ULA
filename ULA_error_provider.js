@@ -1,5 +1,5 @@
 const { tokenVocabulary: _ } = require("./ULA_lexer");
-const { defaultParserErrorProvider } = require("chevrotain");
+// const { defaultParserErrorProvider } = require("chevrotain");
 
 
 const errorProvider = {
