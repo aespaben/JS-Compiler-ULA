@@ -9,8 +9,10 @@ if(ast === undefined) {
   return;
 }
 
-let transpiled_code = "";
-console.log(JSON.stringify(ast, null, 4));
+// console.log(JSON.stringify(ast, null, 4));
+
+let transpiled_code = '"use strict";\n';
+
 if(ast.body) {
   ast.body.forEach(e => {
     if(e.type === "Declaracion") {

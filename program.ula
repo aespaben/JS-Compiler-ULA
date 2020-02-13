@@ -1,13 +1,16 @@
 CREA a;
+
 a = 2 + 4 + 2 + 2;
+
 MUESTRA("Hola, como estás?");
 
 SI(a > 5) ENTONCES {
   a = 2;
-  CREA b;
 }
 
 MUESTRA(a);
+
+CREA b;
 
 b = a;
 
