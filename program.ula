@@ -7,10 +7,12 @@ SI(a > 5) ENTONCES {
   CREA b;
 }
 
-MUESTRA(a;
+MUESTRA(a);
+
+b = a;
 
 REPITE 3 VECES {
-  a = a * a;  
+  a = a * b;  
 }
 
 MUESTRA(a);
