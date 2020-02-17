@@ -1,0 +1,23 @@
+{
+  "name": "js-compiler-ula",
+  "version": "1.0.0",
+  "description": "Compilador para el curso de Compiladores de la Universidad de Los Andes.",
+  "main": "ULA_code_generator.js",
+  "dependencies": {
+    "chevrotain": "^6.5.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aespaben/JS-Compiler-ULA.git"
+  },
+  "author": "Angel España, Adriana Daboin, Génesis Uzcategui",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aespaben/JS-Compiler-ULA/issues"
+  },
+  "homepage": "https://github.com/aespaben/JS-Compiler-ULA#readme"
+}
