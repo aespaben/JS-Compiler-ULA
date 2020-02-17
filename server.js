@@ -1,14 +1,10 @@
-const http = require("http");
+const express = require("express");
+const app = express();
+const path = require("path");
 
-const server = http.createServer((req, res) => {
-  if(req.url === "/") {
-    res.write("Server running");
-    res.end();
-  }
-  else {
-    res.write("Error 404");
-    res.end();
-  }
+app.use("/public", express.static(path.join(__dirname, "static")));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "static", "index.html"));
 });
 
-server.listen("3000");
+app.listen("3000");
