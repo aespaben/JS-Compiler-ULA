@@ -2,7 +2,7 @@
   "name": "js-compiler-ula",
   "version": "1.0.0",
   "description": "Compilador para el curso de Compiladores de la Universidad de Los Andes.",
-  "main": "ULA_code_generator.js",
+  "main": "server.js",
   "dependencies": {
     "chevrotain": "^6.5.0"
   },
@@ -14,7 +14,8 @@
     "pug": "^2.0.4"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",

@@ -216,7 +216,7 @@ class ULAtoAstVisitor extends BaseULAVisitor {
       return ctx.MENOR_IGUAL[0].image;
     }
     else if(ctx.IGUAL) {
-      return ctx.IGUAL[0].image;
+      return "==";
     }
 
     return undefined;

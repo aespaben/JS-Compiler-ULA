@@ -8,6 +8,7 @@ const { generate } = require("./compiler/ULA_code_generator");
 
 app.use("/public", express.static(path.join(__dirname, "static")));
 app.use("/css", express.static(path.join(__dirname, "static", "css")));
+app.use("/js", express.static(path.join(__dirname, "static", "js")));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 /* Motor de plantillas. */
@@ -19,20 +20,35 @@ app.set("view engine", "pug");
 let code = "";
 let compilation = "";
 
+let old = console.log;
+let c = "";
+console.log = function (message) {
+  if (typeof message == 'object') {
+    c += (JSON && JSON.stringify ? JSON.stringify(message) : message) + '\n';
+  } else {
+    c += message + '\n';
+  }
+}
+
 /* Rutas. */
 
 app.get("/", (req, res) => {
-  res.render("index", { code, compilation } );
+  c = "";
+  res.render("index", { code, compilation: "" } );
 });
 
 app.post("/", (req, res) => {
+  if(req.body.reset) {
+    c = "";
+  }
   code = req.body.editor;
   compilation = generate(code);
-  res.render("index", { code, compilation });
+  eval(compilation);
+  res.render("index", { code, compilation: c });
 });
 
 /* Servidor. */
 
 app.listen("3000", () => {
-  console.log("Server running on port 3000");
+  old("Server running on port 3000");
 });

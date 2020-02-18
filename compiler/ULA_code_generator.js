@@ -41,6 +41,11 @@ generate = (code) => {
             if(s.type === "Declaracion") {
               transpiled_code += `\tlet ${s.name};\n`;
             }
+            if(s.type === "Impresion") {
+              if(s.expression.value) {
+                transpiled_code += `console.log(${s.expression.value});\n`;
+              }
+            }
           });
 
           transpiled_code += `}\n`;
@@ -59,7 +64,7 @@ generate = (code) => {
       }
 
     });
-
+/*
     try {
       eval(transpiled_code);
     }
@@ -68,7 +73,7 @@ generate = (code) => {
         console.log(e.message);
       }
     }
-
+*/
     return transpiled_code;
   }
 }
