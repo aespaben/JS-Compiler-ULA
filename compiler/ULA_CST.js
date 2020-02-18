@@ -1,7 +1,6 @@
 /* CST Visitor.
 ***********************************************/
 
-const { tokenMatcher } = require("chevrotain");
 const { tokenize, tokenVocabulary: _ } = require("./ULA_lexer");
 const parser = require("./ULA_parser");
 const ULAParser = parser.ULAParser;

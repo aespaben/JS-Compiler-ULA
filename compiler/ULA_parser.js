@@ -4,8 +4,6 @@ const { CstParser } = require("chevrotain");
 const { tokenVocabulary: _, tokenize } = require("./ULA_lexer");
 const { errorProvider } = require("./ULA_error_provider");
 
-
-
 class ULAParser extends CstParser {
   constructor() {
     super(_, { errorMessageProvider: errorProvider });

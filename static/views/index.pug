@@ -1,0 +1,13 @@
+html
+  head  
+    link(rel="stylesheet", href="../css/style.css")
+    title JS ULA Compiler
+body
+  div(class="flex-container")
+    div
+      form(action="/", method="post")        
+        div(class="row")
+        textarea(name="editor", cols="80", rows="30")= code
+        button Compilar
+        textarea(name="console", cols="80", rows="30")= compilation
+        
