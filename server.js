@@ -33,18 +33,22 @@ console.log = function (message) {
 /* Rutas. */
 
 app.get("/", (req, res) => {
-  c = "";
-  res.render("index", { code, compilation: "" } );
+  res.render("index");
 });
 
-app.post("/", (req, res) => {
+app.get("/compiler", (req, res) => {
+  c = "";
+  res.render("compilador", { code, compilation: "" } );
+});
+
+app.post("/compiler", (req, res) => {
   if(req.body.reset) {
     c = "";
   }
   code = req.body.editor;
   compilation = generate(code);
   eval(compilation);
-  res.render("index", { code, compilation: c });
+  res.render("compilador", { code, compilation: c });
 });
 
 /* Servidor. */

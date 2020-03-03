@@ -117,7 +117,7 @@ class ULAtoAstVisitor extends BaseULAVisitor {
       node.expression = this.visit(ctx.Expresion);
     }
     else {
-      node.string = ctx.FRASE[0].image;
+      node.expression = ctx.FRASE[0].image;
     }
 
     return node;
