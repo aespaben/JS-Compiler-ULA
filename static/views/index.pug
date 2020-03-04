@@ -42,6 +42,10 @@ body
             li ENTONCES
             li REPITE
             li VECES
+            li CIERTO
+            li FALSO
+
+          p Las palabras clave se escriben todas en mayúsculas.
         
         div(class="col-md-8")
           h2(class="text-center mb-md-4") Ejemplo
@@ -56,7 +60,22 @@ body
         div(class="col-md-12 text-center")
           img(src="../img/compiler.png", height="550px")
       a(class="btn btn-success btn-back", href="#ula_language") Atrás
-      a(class="btn btn-success btn-next", href="/compiler") Probar compilador
+      a(class="btn btn-success btn-next", href="#examples") Siguiente
+
+    section(id="examples")
+      h1(class="text-center") Algunos ejemplos
+      div(class="row mt-md-5")
+        div(class="col-md-4 border-right text-center")
+          h2(class="text-center") Suma desde 1 hasta n
+          img(src="../img/sum_all_numbers.png")
+        div(class="col-md-4 border-right text-center")
+          h2(class="text-center") Comprobar la edad
+          img(src="../img/age.png")
+        div(class="col-md-4 text-center")
+          h2(class="text-center") Secuencia de Fibonacci
+          img(src="../img/fibonacci_seq.png")
+      a(class="btn btn-success btn-back", href="#ula_language") Atrás
+      a(class="btn btn-success btn-next", href="/compiler") Ir a programar!
 
   script(src="../js/jquery.min.js")
   script(src="../js/popper.min.js")
