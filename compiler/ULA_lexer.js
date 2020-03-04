@@ -86,12 +86,6 @@ TOKENS.unshift(COMA);
 const FRASE = createToken({ name: "FRASE", pattern: /"(?:[^"\\]|\\.)*"/ });
 TOKENS.unshift(FRASE);
 
-/* NÚMERO.
-***********************************************/
-
-const NUMERO = createToken({ name: "NUMERO", pattern: /0|([1-9][0-9]*)/ });
-TOKENS.unshift(NUMERO);
-
 /* OPERADORES LÓGICOS.
 ***********************************************/
 
@@ -132,6 +126,14 @@ TOKENS.unshift(ENTRE);
 
 const ASIGNACION = createToken({ name: "ASIGNACION", pattern: /=/ });
 TOKENS.unshift(ASIGNACION);
+
+
+/* NÚMERO.
+***********************************************/
+
+const NUMERO = createToken({ name: "NUMERO", pattern: /0|-?([1-9][0-9]*)/ });
+TOKENS.unshift(NUMERO);
+
 
 /* ESPACIOS EN BLANCO.
 ***********************************************/

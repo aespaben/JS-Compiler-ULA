@@ -76,7 +76,7 @@ class ULAtoAstVisitor extends BaseULAVisitor {
         expression: this.visit(ctx.Expresion)
       };
     }
-    else {
+    else if(ctx.FRASE) {
       return {
         type: "Impresion",
         expression: { value: ctx.FRASE[0].image }
@@ -87,7 +87,7 @@ class ULAtoAstVisitor extends BaseULAVisitor {
   Lectura(ctx) {
     return {
       type: "Lectura",
-      argument: ctx.IDENTIFICADOR[0].image
+      expression: ctx.IDENTIFICADOR[0].image
     };
   }
 
@@ -130,7 +130,21 @@ class ULAtoAstVisitor extends BaseULAVisitor {
     node.statements = [];
 
     ctx.Sentencia_simple.forEach((e) => {
-      node.statements.push(this.visit(e)); 
+      node.statements.push(this.visit(e));
+    });
+
+    if(ctx.Sino) {
+      node.else = this.visit(ctx.Sino);
+    }
+
+    return node;
+  }
+
+  Sino(ctx) {
+    let node = { statements: [] };
+
+    ctx.Sentencia_simple.forEach((e) => {
+      node.statements.push(this.visit(e));
     });
 
     return node;
@@ -151,12 +165,28 @@ class ULAtoAstVisitor extends BaseULAVisitor {
     if(ctx.Expresion_logica) {
       return this.visit(ctx.Expresion_logica);      
     }
-    else {
+    else if(ctx.Expresion_matematica) {
       return this.visit(ctx.Expresion_matematica);      
+    }
+    else {
+      return this.visit(ctx.Expresion_parentesis);
     }
   }
 
   Expresion_logica(ctx) {
+    if(ctx.CIERTO) {
+      return {
+        type: "Expresion_logica_atomica",
+        value: true
+      };
+    }
+    else if(ctx.FALSO) {
+      return {
+        type: "Expresion_logica_atomica",
+        value: false
+      };
+    }
+
     let LIVisit = this.visit(ctx.LI);
     let LDVisit = this.visit(ctx.LD);
     let LI = LIVisit.value ? LIVisit.value : LIVisit.name;
@@ -185,6 +215,10 @@ class ULAtoAstVisitor extends BaseULAVisitor {
     }
     return { value: lhs };
   }
+
+  // Expresion_parentesis(ctx) {
+  //   return { value: ctx.PAREN_I[0].image + this.visit(ctx.Expresion).value + ctx.PAREN_D };
+  // }
 
   Multiplicacion(ctx) {
     let lhs = this.visit(ctx.LI).value;
@@ -235,6 +269,12 @@ class ULAtoAstVisitor extends BaseULAVisitor {
         value: ctx.IDENTIFICADOR[0].image
       };
     }
+    // else {
+    //   return {
+    //     type: "Expresion_parentesis",
+    //     value: ctx.PAREN_I[0].image + this.visit(ctx.Expresion_matematica).value + ctx.PAREN_D
+    //   };
+    // }
 
     return undefined;
   }

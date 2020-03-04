@@ -4,16 +4,59 @@ html
     link(rel="stylesheet", href="../css/bootstrap.min.css")
     title JS ULA Compiler
 body
-  nav(class="navbar navbar-expand-lg navbar-light bg-light")
+  // Barra de navegación.
+
+  nav(class="navbar navbar-expand-lg navbar-dark bg-primary")
     ul(class="navbar-nav")
       li(class="nav-item active")
-        a(class="nav-link", href="/") Inicio
+        a(class="nav-link", href="/") Presentación
 
       li(class="nav-item")
         a(class="nav-link", href="/compiler") Compilador
  
+  // Contenido del sitio.
   div(class="container")
- 
+
+    // Presentación
+    section(id="introduction")
+      h1(class="text-center") Compilador ULA JS
+      h2(class="mt-md-5 mb-md-5") Integrantes
+      div(class="bg-ula")
+        img(src="../img/escudo_ula.jpg", alt="", width="350px")
+      p Angel España
+      p Adriana Daboin
+      p Génesis Uzcategui
+
+      a(class="btn btn-success btn-next", href="#ula_language") Siguiente
+
+    // Introducción
+    section(id="ula_language")
+      h1(class="text-center") Lenguaje ULA
+      div(class="row mt-md-5")
+        div(class="col-md-4 border-right")
+          h2(class="text-center mb-md-4") Palabras clave más usadas
+          ul
+            li CREA
+            li MUESTRA
+            li SI
+            li ENTONCES
+            li REPITE
+            li VECES
+        
+        div(class="col-md-8")
+          h2(class="text-center mb-md-4") Ejemplo
+          img(src="../img/compiler_example.png", width="750px")
+
+      a(class="btn btn-success btn-back", href="#introduction") Atrás
+      a(class="btn btn-success btn-next", href="#components") Siguiente
+
+    section(id="components")
+      h1(class="text-center") Componentes
+      div(class="row")
+        div(class="col-md-12 text-center")
+          img(src="../img/compiler.png", height="550px")
+      a(class="btn btn-success btn-back", href="#ula_language") Atrás
+      a(class="btn btn-success btn-next", href="/compiler") Probar compilador
 
   script(src="../js/jquery.min.js")
   script(src="../js/popper.min.js")

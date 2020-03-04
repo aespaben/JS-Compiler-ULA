@@ -25,31 +25,68 @@ generate = (code) => {
       }
 
       if(e.type === "Impresion") {
-        if(e.expression.value) {
+        if(e.expression) {
           transpiled_code += `console.log(${e.expression.value});\n`;
         }
       }
 
+      // if(e.type === "Lectura") {
+      //   transpiled_code += `${e.expression} = prompt("");\n`;
+      // }
+
       if(e.type === "Decision") {
         if(e.expression.type === "Expresion_logica") {
           transpiled_code += `if(${e.expression.lhs} ${e.expression.operator} ${e.expression.rhs}) {\n`;
-
-          e.statements.forEach((s) => {
-            if(s.type === "Asignacion") {
-              transpiled_code += `\t${s.name} = ${s.expression.value};\n`;
-            }
-            if(s.type === "Declaracion") {
-              transpiled_code += `\tlet ${s.name};\n`;
-            }
-            if(s.type === "Impresion") {
-              if(s.expression.value) {
-                transpiled_code += `console.log(${s.expression.value});\n`;
-              }
-            }
-          });
-
-          transpiled_code += `}\n`;
         }
+        else if(e.expression.type === "Expresion_logica_atomica") {
+          transpiled_code += `if(${e.expression.value}) {\n`;
+        }
+
+        e.statements.forEach((s) => {
+          if(s.type === "Asignacion") {
+            transpiled_code += `\t${s.name} = ${s.expression.value};\n`;
+          }
+          if(s.type === "Declaracion") {
+            transpiled_code += `\tlet ${s.name};\n`;
+          }
+
+          if(s.type === "Definicion") {
+            transpiled_code += `let ${s.name} = ${s.expression.value};\n`;
+          }
+
+          if(s.type === "Impresion") {
+            if(s.expression) {
+              transpiled_code += `console.log(${s.expression.value});\n`;
+            }
+          }
+        });
+
+        transpiled_code += `}\n`;
+      }
+
+      if(e.else) {
+        transpiled_code += `else {\n`;
+
+        e.else.statements.forEach((s) => {
+          if(s.type === "Asignacion") {
+            transpiled_code += `\t${s.name} = ${s.expression.value};\n`;
+          }
+          if(s.type === "Declaracion") {
+            transpiled_code += `\tlet ${s.name};\n`;
+          }
+
+          if(s.type === "Definicion") {
+            transpiled_code += `\tlet ${s.name} = ${s.expression.value};\n`;
+          }
+
+          if(s.type === "Impresion") {
+            if(s.expression) {
+              transpiled_code += `\tconsole.log(${s.expression.value});\n`;
+            }
+          }
+        });
+
+        transpiled_code += `}\n`;
       }
 
       if(e.type === "Repeticion") {
@@ -58,22 +95,27 @@ generate = (code) => {
           if(s.type === "Asignacion") {
             transpiled_code += `\t${s.name} = ${s.expression.value};\n`;
           }
+
+          if(s.type === "Declaracion") {
+            transpiled_code += `\tlet ${s.name};\n`;
+          }
+
+          if(s.type === "Definicion") {
+            transpiled_code += `let ${s.name} = ${s.expression.value};\n`;
+          }
+
+          if(s.type === "Impresion") {
+            if(s.expression.value) {
+              transpiled_code += `console.log(${s.expression.value});\n`;
+            }
+          }
         });
 
         transpiled_code += `}\n`;
       }
 
     });
-/*
-    try {
-      eval(transpiled_code);
-    }
-    catch(e) {
-      if(e instanceof SyntaxError) {
-        console.log(e.message);
-      }
-    }
-*/
+
     return transpiled_code;
   }
 }

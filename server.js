@@ -9,6 +9,7 @@ const { generate } = require("./compiler/ULA_code_generator");
 app.use("/public", express.static(path.join(__dirname, "static")));
 app.use("/css", express.static(path.join(__dirname, "static", "css")));
 app.use("/js", express.static(path.join(__dirname, "static", "js")));
+app.use("/img", express.static(path.join(__dirname, "static", "img")));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 /* Motor de plantillas. */
@@ -47,7 +48,13 @@ app.post("/compiler", (req, res) => {
   }
   code = req.body.editor;
   compilation = generate(code);
-  eval(compilation);
+  try {
+    eval(compilation);
+  }
+  catch(e) {
+    console.log(e.message);
+  }
+  
   res.render("compilador", { code, compilation: c });
 });
 
