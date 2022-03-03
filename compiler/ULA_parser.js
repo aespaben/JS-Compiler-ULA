@@ -4,8 +4,6 @@ const { CstParser } = require("chevrotain");
 const { tokenVocabulary: _, tokenize } = require("./ULA_lexer");
 const { errorProvider } = require("./ULA_error_provider");
 
-
-
 class ULAParser extends CstParser {
   constructor() {
     super(_, { errorMessageProvider: errorProvider });
@@ -93,14 +91,18 @@ class ULAParser extends CstParser {
         $.SUBRULE($.Sentencia_simple);
       });
       $.CONSUME(_.LLAVE_D);
-      // $.OPTION(() => {
-      //   $.CONSUME(_.SINO);
-      //   $.CONSUME2(_.LLAVE_I);
-      //   $.AT_LEAST_ONE2(() => {
-      //     $.SUBRULE2($.Sentencia_simple);
-      //   });
-      //   $.CONSUME2(_.LLAVE_D);
-      // });
+      $.OPTION(() => {
+        $.SUBRULE($.Sino);
+      });
+    });
+
+    $.RULE("Sino", () => {
+      $.CONSUME(_.SINO);
+        $.CONSUME(_.LLAVE_I);
+        $.AT_LEAST_ONE(() => {
+          $.SUBRULE($.Sentencia_simple);
+        });
+        $.CONSUME(_.LLAVE_D);
     });
 
     $.RULE("Repeticion", () => {
@@ -126,15 +128,22 @@ class ULAParser extends CstParser {
     });    
 
     $.RULE("Expresion_logica", () => {
-      $.SUBRULE($.Expresion_atomica, { LABEL: "LI" });
-      $.SUBRULE($.Operador_relacional);
-      $.SUBRULE2($.Expresion_atomica, { LABEL: "LD" });
+      $.OR([
+        { ALT: () => { $.CONSUME(_.CIERTO); }},
+        { ALT: () => { $.CONSUME(_.FALSO); }},
+        { ALT: () => {
+          $.SUBRULE($.Expresion_atomica, { LABEL: "LI" });
+          $.SUBRULE($.Operador_relacional);
+          $.SUBRULE2($.Expresion_atomica, { LABEL: "LD" });}}
+      ]);
+      
     });
 
     $.RULE("Expresion_atomica", () => {
       $.OR([
         { ALT: () => { $.CONSUME(_.NUMERO); } },
-        { ALT: () => { $.CONSUME(_.IDENTIFICADOR); } }
+        { ALT: () => { $.CONSUME(_.IDENTIFICADOR); } },
+        // { ALT: () => { $.SUBRULE($.Expresion_parentesis); } }
       ]);
     });
 
@@ -155,6 +164,12 @@ class ULAParser extends CstParser {
         $.SUBRULE2($.Multiplicacion, { LABEL: "LD" });
       });       
     });
+
+    // $.RULE("Expresion_parentesis", () => {
+    //   $.CONSUME(_.PAREN_I);
+    //   $.SUBRULE($.Expresion_matematica);
+    //   $.CONSUME(_.PAREN_D);
+    // });
 
     $.RULE("Multiplicacion", () => {
       $.SUBRULE($.Expresion_atomica, { LABEL: "LI" });
